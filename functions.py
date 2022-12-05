@@ -1,6 +1,6 @@
-import numpy as np
 import cv2
 import os
+import numpy as np
 
 def Prep(img):
     img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
