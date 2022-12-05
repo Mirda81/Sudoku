@@ -22,3 +22,14 @@ def load_digits():
             new_arr = Prep(new_arr)
             data2.append([new_arr, label])
     return data2
+
+def load_sudoku_images(slozka):
+    data = []
+
+    for img in os.listdir(slozka):
+        img_path = os.path.join(slozka, img)
+        arr = cv2.imread(img_path)
+        new_arr = cv2.resize(arr, (540, 540), interpolation=cv2.INTER_LINEAR)
+        data.append(new_arr)
+    data = np.array(data)
+    return data

@@ -1,16 +1,13 @@
-# This is a sample Python script.
+import os, random
+from functions import load_sudoku_images
+from image_processing import Preprocess
+import cv2
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+slozka_sudoku = r'test_imgs/'
+obrazky = load_sudoku_images(slozka_sudoku)
+priklad = obrazky[5,:,:,:]
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+prep_img = Preprocess(priklad)
+cv2.imshow('window', prep_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
