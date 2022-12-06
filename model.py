@@ -5,7 +5,7 @@ from functions import load_digits
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
 from keras.layers import BatchNormalization, Dropout
 from keras.models import Sequential
-
+import pickle
 X = []
 y = []
 data = load_digits()
@@ -52,7 +52,7 @@ opt = keras.optimizers.SGD(lr=0.001, momentum=0.9)
 model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 # fit model
 model.summary()
-history = model.fit(X_train, train_y_one_hot, epochs=10, batch_size=32, validation_data=(X_test, test_y_one_hot),
+history = model.fit(X_train, train_y_one_hot, epochs=5, batch_size=32, validation_data=(X_test, test_y_one_hot),
                     verbose=1)
 
-model.save('model')
+pickle.dump(model, open('model.pkl', 'wb'))

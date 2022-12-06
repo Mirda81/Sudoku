@@ -1,6 +1,6 @@
 import os, random
 from functions import load_sudoku_images
-from image_processing import Preprocess, extract_frame, Perspective_transform, frame_kont
+from image_processing import Preprocess, extract_frame, Perspective_transform, frame_kont, extract_numbers
 import cv2
 import time as t
 
