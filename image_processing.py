@@ -137,7 +137,6 @@ def predict_numbers(numbers, matice):
     while y < 450:
         x = 0
         while x < 450:
-            print(x, y)
             vysek = numbers[y:y + 50, x:x + 50]
             if np.sum(vysek) == 0:
                 predikce = 0
@@ -146,8 +145,7 @@ def predict_numbers(numbers, matice):
                 # vysek = cv2.resize(vysek,(28,28))
                 vysek = vysek / 255
                 predikce = np.argmax(model.predict(vysek.reshape(1, 40, 40, 1)))
-
             x += step
-            matice[int(x/50)-1,int(y/50)-1] = predikce
+            matice[int(y/50),int(x/50)-1] = predikce
         y += step
     return matice

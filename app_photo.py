@@ -7,7 +7,7 @@ import time as t
 
 slozka_sudoku = r'test_imgs/'
 obrazky = load_sudoku_images(slozka_sudoku)
-priklad = obrazky[0,:,:,:]
+priklad = obrazky[2,:,:,:]
 prev = 0
 
 
