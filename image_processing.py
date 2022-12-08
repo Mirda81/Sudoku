@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import keras
 import pickle
+
+
 def Preprocess(img):
     blurred = cv2.GaussianBlur(img, (3, 3), 0)
     gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
@@ -130,8 +132,7 @@ def center_crop(img, dim):
 	crop_img = img[mid_y-ch2:mid_y+ch2, mid_x-cw2:mid_x+cw2]
 	return crop_img
 
-def predict_numbers(numbers, matice):
-    model = pickle.load(open('model.pkl', 'rb'))
+def predict_numbers(numbers, matice, model):
     y = 0
     step = 50
     while y < 450:
@@ -149,3 +150,26 @@ def predict_numbers(numbers, matice):
             matice[int(y/50),int(x/50)-1] = predikce
         y += step
     return matice
+
+def displayNumbers(img, numbers, solved_num, color=(0, 255, 0)):
+    W = int(img.shape[1]/9)
+    H = int(img.shape[0]/9)
+    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    for i in range (9):
+        for j in range (9):
+            if numbers[j,i] ==0:
+                cv2.putText(img, str(solved_num[j,i]),
+                (i*W+int(W/2)-int((W/4)),int((j+0.7)*H)),
+                cv2.FONT_HERSHEY_COMPLEX, 1, color,
+                1, cv2.LINE_AA)
+    return img
+
+def get_InvPerspective(img, masked_num, location, height = 450, width = 450):
+    """Takes original image as input"""
+    pts1 = np.float32([[0, 0], [width, 0], [0, height], [width, height]])
+    pts2 = np.float32([location[0], location[3], location[1], location[2]])
+    # Apply Perspective Transform Algorithm
+    matrix = cv2.getPerspectiveTransform(pts1, pts2)
+    result = cv2.warpPerspective(masked_num, matrix, (img.shape[1],
+    img.shape[0]))
+    return result
