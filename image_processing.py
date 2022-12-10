@@ -37,20 +37,21 @@ def extract_frame(img):
     cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
     res = cv2.bitwise_and(res, ramecek)
 
-    return res, biggest_contour
-
-def Perspective_transform(img, shape, kontura):
-    biggest_contour = kontura.reshape(len(kontura), 2)
+    return res, biggest_contour, res2
+def get_corners(contour):
+    biggest_contour = contour.reshape(len(contour), 2)
     suma_vekt = biggest_contour.sum(1)
     print(suma_vekt)
     suma_vekt2 = np.delete(biggest_contour, [np.argmax(suma_vekt), np.argmin(suma_vekt)], 0)
-    suma_vekt2[:, 0]
 
     corners = np.float32([biggest_contour[np.argmin(suma_vekt)], suma_vekt2[np.argmax(suma_vekt2[:, 0])],
                           suma_vekt2[np.argmin(suma_vekt2[:, 0])], biggest_contour[np.argmax(suma_vekt)]])
 
-    pts2 = np.float32([[0, 0], [shape[0], 0], [0, shape[1]], [shape[0], shape[1]]])
-    # Apply Perspective Transform Algorithm
+    return corners
+
+def Perspective_transform(img, shape, corners):
+    pts2 = np.float32([[0, 0], [shape[0], 0], [0, shape[1]], [shape[0], shape[1]]])    # Apply Perspective Transform Algorithm
+
     matrix = cv2.getPerspectiveTransform(corners, pts2)
     result = cv2.warpPerspective(img, matrix, (shape[0], shape[1]))
 
@@ -143,9 +144,10 @@ def displayNumbers(img, numbers, solved_num, color=(0, 255, 0)):
 def get_InvPerspective(img, masked_num, location, height = 450, width = 450):
     """Takes original image as input"""
     pts1 = np.float32([[0, 0], [width, 0], [0, height], [width, height]])
-    pts2 = np.float32([location[0], location[3], location[1], location[2]])
+    pts2 = np.float32([location[0], location[1], location[2], location[3]])
     # Apply Perspective Transform Algorithm
     matrix = cv2.getPerspectiveTransform(pts1, pts2)
     result = cv2.warpPerspective(masked_num, matrix, (img.shape[1],
     img.shape[0]))
     return result
+
