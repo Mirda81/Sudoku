@@ -56,81 +56,57 @@ def Perspective_transform(img, shape, kontura):
 
     return result
 
-def frame_kont(img):
-
-    kernel1 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20, 50))
-    close = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel1)
-    div = np.float32(img) / (close)
-    res = np.uint8(cv2.normalize(div, div, 0, 255, cv2.NORM_MINMAX))
-
-
-    thresh = cv2.adaptiveThreshold(res, 255, 0, 1, 19, 2)
-    contours, hier = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    best_cnt = None
-    max = 0
-    hit = False
-    for kontura in contours:
-        obsah = cv2.contourArea(kontura)
-        peri = cv2.arcLength(kontura, True)
-        vektory = cv2.approxPolyDP(kontura, 0.02 * peri, True)
-        if (len(vektory == 4)) and (obsah > max):
-            max = obsah
-            biggest_contour = kontura
-            hit = True
-
-    return biggest_contour
-
 def extract_numbers(img):
-    result2 =cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                      cv2.THRESH_BINARY_INV,21,5)
+    result = preProcess_numbers(img)
+    retval, labels, stats, centroids = cv2.connectedComponentsWithStats(result)
+    viz = np.zeros_like(result, np.uint8)
+    centroidy = []
+    stats_numbers = []
+
+    for i, stat in enumerate(stats):
+        if i == 0:
+            continue
+        if stat[4] > 20 and stat[2] > 10 and stat[3] > 20 and stat[3] < 50 and stat[2] < 50 and stat[0] > 0 and stat[
+            1] > 0 and stat[3] > stat[2]:
+            viz[labels == i] = 255
+            centroidy.append(centroids[i])
+            stats_numbers.append(stat)
+
+    stats_numbers = np.array(stats_numbers)
+    centroidy = np.array(centroidy)
+    return viz, stats_numbers, centroidy
+
+
+def preProcess_numbers(img):
+    img =cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,9,5)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-    gray = cv2.morphologyEx(result2, cv2.MORPH_CLOSE, kernel, iterations=1)
+    img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel, iterations=1)
 
-    kernel = np.ones((1,6),np.uint8)
-    edges = cv2.dilate(gray,kernel,iterations = 1)
-    kernel2 = np.ones((6,1),np.uint8)
-    edges = cv2.dilate(edges,kernel2,iterations = 1)
+    return img
 
-    cnts = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-    for c in cnts:
-        area = cv2.contourArea(c)
-        if area < 1000:
-            cv2.drawContours(edges, [c], -1, (0,255,0), -1)
+def center_numbers(img, stats, centroids):
+    centered_num_grid = np.zeros_like(img, np.uint8)
+    for i, number in enumerate(stats):
+        cropped_num = img[number[1]:number[1] + number[3], number[0]:number[0] + number[2]]
+        center = centroids[i]
+        offset_x = int(np.round(np.round(center[0] / 25, 0) * 25 - center[0], 0))
+        offset_y = int(np.round(np.round(center[1] / 25, 0) * 25 - center[1], 0))
+        centered_num_grid[number[1] + offset_y:number[1] + number[3] + offset_y,
+        number[0] + offset_x:number[0] + number[2] + offset_x] = img[number[1]:number[1] + number[3],
+                                                                 number[0]:number[0] + number[2]]
+    return centered_num_grid
 
-    vertical_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (20, 5))
-    mrizka = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, vertical_kernel, iterations=2)
-    horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 20))
-    mrizka = cv2.morphologyEx(mrizka, cv2.MORPH_CLOSE, horizontal_kernel, iterations=2)
-    filtered_number = result2 - mrizka
-    filtered_number[filtered_number == 1] = 0
-    return filtered_number
 
-def proccesCell(cell):
-  kernel = np.ones((3,3),np.uint8)
-  closing = cv2.morphologyEx(cell, cv2.MORPH_OPEN, kernel)
-  cropped_img = closing[5:closing.shape[0]-5, 5:closing.shape[0]-5]
-  cc = center_crop(cropped_img,(40,40))
-  ret,thresh = cv2.threshold(cc, 125, 255,
-                       cv2.THRESH_BINARY_INV)
-  return thresh
 
-def center_crop(img, dim):
-	"""Returns center cropped image
-	Args:
-	img: image to be center cropped
-	dim: dimensions (width, height) to be cropped
-	"""
-	width, height = img.shape[1], img.shape[0]
+def proccesCell(img):
+    kernel = np.ones((3, 3), np.uint8)
+    # closing = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+    ret, thresh = cv2.threshold(img, 125, 255,
+                                cv2.THRESH_BINARY_INV)
+    cropped_img = thresh[5:thresh.shape[0] - 5, 5:thresh.shape[0] - 5]
+    resized = cv2.resize(cropped_img, (40, 40))
+    return resized
 
-	# process crop width and height for max available dimension
-	crop_width = dim[0] if dim[0]<img.shape[1] else img.shape[1]
-	crop_height = dim[1] if dim[1]<img.shape[0] else img.shape[0]
-	mid_x, mid_y = int(width/2), int(height/2)
-	cw2, ch2 = int(crop_width/2), int(crop_height/2)
-	crop_img = img[mid_y-ch2:mid_y+ch2, mid_x-cw2:mid_x+cw2]
-	return crop_img
 
 def predict_numbers(numbers, matice, model):
     y = 0
