@@ -17,7 +17,7 @@ def extract_frame(img):
     res = np.uint8(cv2.normalize(div, div, 0, 255, cv2.NORM_MINMAX))
     res2 = cv2.cvtColor(res, cv2.COLOR_GRAY2BGR)
 
-    thresh = cv2.adaptiveThreshold(res, 255, 0, 1, 19, 2)
+    thresh = cv2.adaptiveThreshold(res, 255, 0, 1, 9, 5)
     contours, hier = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     best_cnt = None
@@ -26,7 +26,7 @@ def extract_frame(img):
     for kontura in contours:
         obsah = cv2.contourArea(kontura)
         peri = cv2.arcLength(kontura, True)
-        vektory = cv2.approxPolyDP(kontura, 0.02 * peri, True)
+        vektory = cv2.approxPolyDP(kontura, 0.01 * peri, True)
         if (len(vektory == 4)) and (obsah > max):
             max = obsah
             biggest_contour = vektory
@@ -67,7 +67,7 @@ def extract_numbers(img):
     for i, stat in enumerate(stats):
         if i == 0:
             continue
-        if stat[4] > 20 and stat[2] > 10 and stat[3] > 20 and stat[3] < 50 and stat[2] < 50 and stat[0] > 0 and stat[
+        if stat[4] > 20 and stat[2] > 5 and stat[3] > 15 and stat[3] < 50 and stat[2] < 50 and stat[0] > 0 and stat[
             1] > 0 and stat[3] > stat[2]:
             viz[labels == i] = 255
             centroidy.append(centroids[i])
