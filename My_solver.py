@@ -41,15 +41,15 @@ def unpack_moznosti(box):
    result.extend(box[cell])
  return  result
 
-matice = np.array([[0, 0, 0, 0, 0, 0, 0, 6, 0],
-                   [2, 8, 0, 0, 0, 0, 0, 0, 4],
-                   [0, 0, 7, 0, 0, 5, 8, 0, 0],
-                   [5, 0, 0, 3, 4, 0, 0, 2, 0],
-                   [4, 0, 0, 5, 0, 1, 0, 0, 8],
-                   [0, 1, 0, 0, 7, 6, 0, 0, 3],
-                   [0, 0, 5, 1, 0, 0, 2, 0, 0],
-                   [3, 0, 0, 0, 0, 0, 0, 8, 1],
-                   [0, 9, 0, 0, 0, 0, 0, 0, 0]], dtype=object)
+# matice = np.array([[0, 0, 0, 0, 0, 0, 0, 6, 0],
+#                    [2, 8, 0, 0, 0, 0, 0, 0, 4],
+#                    [0, 0, 7, 0, 0, 5, 8, 0, 0],
+#                    [5, 0, 0, 3, 4, 0, 0, 2, 0],
+#                    [4, 0, 0, 5, 0, 1, 0, 0, 8],
+#                    [0, 1, 0, 0, 7, 6, 0, 0, 3],
+#                    [0, 0, 5, 1, 0, 0, 2, 0, 0],
+#                    [3, 0, 0, 0, 0, 0, 0, 8, 1],
+#                    [0, 9, 0, 0, 0, 0, 0, 0, 0]], dtype=object)
 
 
 # matice = np.array([[2,0,5,0,0, 7, 0, 0, 6],
@@ -73,33 +73,33 @@ matice = np.array([[0, 0, 0, 0, 0, 0, 0, 6, 0],
 #  [3, 0, 0, 0, 5, 0, 0, 0, 8]], dtype=object)
 # print(matice[3:6,6:])
 # print(matice_moznosti[3:6,6:])
-pocitadlo = 0
-while matice.size - np.count_nonzero(matice) >0:
-    vyreseno = np.count_nonzero(matice)
-    matice_moznosti = get_poss_matrix(matice)
-    for row in range(9):
-        for col in range(9):
-            if matice[row,col] == 0:
-                moznosti = matice_moznosti[row,col]
+def solve_sudoku(matice):
+    matice = matice.astype(object)
+    pocitadlo = 0
+    while matice.size - np.count_nonzero(matice) >0:
+        matice_moznosti = get_poss_matrix(matice)
+        for row in range(9):
+            for col in range(9):
+                if matice[row,col] == 0:
+                    moznosti = matice_moznosti[row,col]
 
-                box_moznosti, row_moznosti, col_moznosti = get_b_r_c(matice_moznosti,row,col)
-                box2 = unpack_moznosti(box_moznosti)
-                col2 = unpack_moznosti(col_moznosti)
-                row2 = unpack_moznosti(row_moznosti)
-                for moznost in moznosti:
-                 if box2.count(moznost) == 1 or col2.count(moznost) == 1 or row2.count(moznost) == 1:
-                  matice[row, col] = moznost
-                  matice_moznosti = get_poss_matrix(matice)
-    vyreseno_po = np.count_nonzero(matice)
-    # if vyreseno_po == vyreseno:
-    #     matice[0,0] = 1
-    if pocitadlo == 100:
-        break
-    else:
-        pocitadlo+=1
-print(f"zbýva vyřešit: {np.count_nonzero(matice)}")
-print(matice)
-print(matice_moznosti)
+                    box_moznosti, row_moznosti, col_moznosti = get_b_r_c(matice_moznosti,row,col)
+                    box2 = unpack_moznosti(box_moznosti)
+                    col2 = unpack_moznosti(col_moznosti)
+                    row2 = unpack_moznosti(row_moznosti)
+                    for moznost in moznosti:
+                     if box2.count(moznost) == 1 or col2.count(moznost) == 1 or row2.count(moznost) == 1:
+                      matice[row, col] = moznost
+                      matice_moznosti = get_poss_matrix(matice)
+        vyreseno_po = np.count_nonzero(matice)
+        # if vyreseno_po == vyreseno:
+        #     matice[0,0] = 1
+        if pocitadlo == 1000:
+            break
+        else:
+            pocitadlo+=1
+    print(matice)
+    return matice
 
 
 

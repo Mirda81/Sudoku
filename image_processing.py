@@ -67,8 +67,7 @@ def extract_numbers(img):
     for i, stat in enumerate(stats):
         if i == 0:
             continue
-        if stat[4] > 20 and stat[2] > 5 and stat[3] > 15 and stat[3] < 50 and stat[2] < 50 and stat[0] > 0 and stat[
-            1] > 0 and stat[3] > stat[2]:
+        if stat[4] > 50 and stat[2] > 5 and stat[3] > 5 and stat[3] < 40 and stat[2] < 40 and stat[0] > 0 and stat[1] > 0 and stat[3]/stat[2]>1 and stat[3]/stat[2]<10:
             viz[labels == i] = 255
             centroidy.append(centroids[i])
             stats_numbers.append(stat)
@@ -79,7 +78,7 @@ def extract_numbers(img):
 
 
 def preProcess_numbers(img):
-    img =cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,9,5)
+    img =cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,21,5)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel, iterations=1)
 
