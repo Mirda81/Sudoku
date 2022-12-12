@@ -9,7 +9,7 @@ from My_solver import solve_sudoku
 
 slozka_sudoku = r'test_imgs/'
 obrazky = load_sudoku_images(slozka_sudoku)
-priklad = obrazky[1,:,:,:]
+priklad = obrazky[2,:,:,:]
 prev = 0
 #model = pickle.load(open('model.pkl', 'rb'))
 model = load_model('model.h5')
@@ -18,9 +18,9 @@ frame, contour, res2 = extract_frame(prep_img)
 corners = get_corners(contour)
 result = Perspective_transform(frame,(450,450), corners)
 img, stats, centroids = extract_numbers(result)
-# centered_numbers = center_numbers(img, stats, centroids)
+centered_numbers = center_numbers(img, stats, centroids)
 matice = np.zeros((9,9), dtype='uint8')
-matice_predicted = predict_numbers(img,matice,model)
+matice_predicted = predict_numbers(centered_numbers,matice,model)
 matice_solved = matice_predicted.copy()
 
 # cv2.imshow("transormed", priklad)

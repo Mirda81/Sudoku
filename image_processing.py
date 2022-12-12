@@ -38,7 +38,6 @@ def extract_frame(img):
 def get_corners(contour):
     biggest_contour = contour.reshape(len(contour), 2)
     suma_vekt = biggest_contour.sum(1)
-    print(suma_vekt)
     suma_vekt2 = np.delete(biggest_contour, [np.argmax(suma_vekt), np.argmin(suma_vekt)], 0)
 
     corners = np.float32([biggest_contour[np.argmin(suma_vekt)], suma_vekt2[np.argmax(suma_vekt2[:, 0])],
@@ -64,7 +63,7 @@ def extract_numbers(img):
     for i, stat in enumerate(stats):
         if i == 0:
             continue
-        if stat[4] > 50 and stat[2] > 5 and stat[3] > 5 and stat[3] < 40 and stat[2] < 40 and stat[0] > 0 and stat[1] > 0 and stat[3]/stat[2]>1 and stat[3]/stat[2]<10:
+        if stat[4] > 50 and stat[2] > 5 and stat[3] > 5 and stat[3] < 40 and stat[2] < 40 and stat[0] > 0 and stat[1] > 0 and stat[3]/stat[2]>1 and stat[3]/stat[2]<5:
             viz[labels == i] = 255
             centroidy.append(centroids[i])
             stats_numbers.append(stat)
@@ -75,9 +74,9 @@ def extract_numbers(img):
 
 
 def preProcess_numbers(img):
-    img =cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,21,5)
+    img =cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,13,2)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-    img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel, iterations=1)
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=1)
 
     return img
 
