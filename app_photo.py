@@ -9,10 +9,10 @@ from My_solver import solve_sudoku
 
 slozka_sudoku = r'test_imgs/'
 obrazky = load_sudoku_images(slozka_sudoku)
-priklad = obrazky[2,:,:,:]
+priklad = obrazky[3,:,:,:]
 prev = 0
 #model = pickle.load(open('model.pkl', 'rb'))
-model = load_model('model.h5')
+model = load_model('model2.h5')
 prep_img = Preprocess(priklad)
 frame, contour, res2 = extract_frame(prep_img)
 corners = get_corners(contour)

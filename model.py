@@ -55,4 +55,4 @@ model.summary()
 history = model.fit(X_train, train_y_one_hot, epochs=20, batch_size=32, validation_data=(X_test, test_y_one_hot),
                     verbose=1)
 
-model.save('model.h5')
+model.save('model2.h5')
