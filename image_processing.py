@@ -20,9 +20,8 @@ def extract_frame(img):
     thresh = cv2.adaptiveThreshold(res, 255, 0, 1, 9, 5)
     contours, hier = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    best_cnt = None
+    biggest_contour = None
     max = 0
-    hit = False
     for kontura in contours:
         obsah = cv2.contourArea(kontura)
         peri = cv2.arcLength(kontura, True)
@@ -30,8 +29,6 @@ def extract_frame(img):
         if (len(vektory == 4)) and (obsah > max):
             max = obsah
             biggest_contour = vektory
-            hit = True
-    hit
 
     cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
     cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
