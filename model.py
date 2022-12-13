@@ -34,13 +34,14 @@ X_test = X_test.reshape(X_test.shape[0], 40, 40, 1)
 
 model = Sequential()
 model.add(
-    Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(40, 40, 1)))
+    Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(40, 40, 1)))
 model.add(BatchNormalization())
-model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
-model.add(Dropout(0.4))
 model.add(MaxPooling2D((2, 2)))
-model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
 model.add(BatchNormalization())
+model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+model.add(Dropout(0.5))
+model.add(BatchNormalization())
+model.add(MaxPooling2D((2, 2)))
 model.add(Conv2D(16, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
 model.add(BatchNormalization())
 model.add(MaxPooling2D((2, 2)))
@@ -52,7 +53,7 @@ opt = keras.optimizers.SGD(lr=0.005, momentum=0.9)
 model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 # fit model
 model.summary()
-history = model.fit(X_train, train_y_one_hot, epochs=8, batch_size=64, validation_data=(X_test, test_y_one_hot),
+history = model.fit(X_train, train_y_one_hot, epochs=10, batch_size=16, validation_data=(X_test, test_y_one_hot),
                     verbose=1)
 
 model.save('model2.h5')
