@@ -9,7 +9,7 @@ from My_solver import solve_sudoku
 
 slozka_sudoku = r'test_imgs/'
 obrazky = load_sudoku_images(slozka_sudoku)
-priklad = obrazky[3,:,:,:]
+priklad = obrazky[1,:,:,:]
 prev = 0
 #model = pickle.load(open('model.pkl', 'rb'))
 model = load_model('model2.h5')
