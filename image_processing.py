@@ -11,13 +11,13 @@ def Preprocess(img):
 
 def extract_frame(img):
     ramecek = np.zeros((img.shape), np.uint8)
-    kernel1 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20, 50))
-    close = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel1)
-    div = np.float32(img) / (close)
-    res = np.uint8(cv2.normalize(div, div, 0, 255, cv2.NORM_MINMAX))
-    res2 = cv2.cvtColor(res, cv2.COLOR_GRAY2BGR)
+    # kernel1 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20, 50))
+    # close = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel1)
+    # div = np.float32(img) / (close)
+    # res = np.uint8(cv2.normalize(div, div, 0, 255, cv2.NORM_MINMAX))
+    res2 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
-    thresh = cv2.adaptiveThreshold(res, 255, 0, 1, 9, 5)
+    thresh = cv2.adaptiveThreshold(img, 255, 0, 1, 9, 5)
     contours, hier = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     biggest_contour = None
@@ -32,9 +32,9 @@ def extract_frame(img):
 
     cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
     cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
-    res = cv2.bitwise_and(res, ramecek)
+    res = cv2.bitwise_and(img, ramecek)
 
-    return res, biggest_contour, res2
+    return res, biggest_contour
 def get_corners(contour):
     biggest_contour = contour.reshape(len(contour), 2)
     suma_vekt = biggest_contour.sum(1)
@@ -74,7 +74,7 @@ def extract_numbers(img):
 
 
 def preProcess_numbers(img):
-    img =cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,13,2)
+    img =cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,9,2)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=1)
 
