@@ -3,6 +3,7 @@ from keras.models import load_model
 
 from functions import load_sudoku_images
 from image_processing import Preprocess, extract_frame, Perspective_transform, extract_numbers, predict_numbers,displayNumbers, get_InvPerspective, center_numbers, get_corners
+from solver import solve
 from My_solver import solve_sudoku
 import cv2
 import time as t
@@ -44,7 +45,7 @@ while True:
     frame, contour= extract_frame(prep_img)
     if len(contour) > 0:
         corners = get_corners(contour)
-
+        corners_check = int(round(np.sum(corners),-1)) == predesle_corners
 
         for corner in corners:
             x, y = corner
@@ -61,7 +62,7 @@ while True:
             matice_solved = matice_predicted.copy()
             matice_predesla = np.sum(matice_predicted)
             matice_solved = solve_sudoku(matice_solved)
-            seen = True
+            not seen
 
         mask = np.zeros_like(result)
         img_solved = displayNumbers(mask, matice_predicted, matice_solved)
