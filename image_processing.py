@@ -26,15 +26,19 @@ def extract_frame(img):
         obsah = cv2.contourArea(kontura)
         peri = cv2.arcLength(kontura, True)
         vektory = cv2.approxPolyDP(kontura, 0.01 * peri, True)
-        if (len(vektory == 4)) and (obsah > max):
+        if (len(vektory)==4) and (obsah > max):
             max = obsah
             biggest_contour = vektory
 
-    cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
-    cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
-    res = cv2.bitwise_and(img, ramecek)
+    if biggest_contour is not None:
+        cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
+        cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
+        res = cv2.bitwise_and(img, ramecek)
 
-    return res, biggest_contour
+        return res, biggest_contour
+
+    else:
+        return [], []
 def get_corners(contour):
     biggest_contour = contour.reshape(len(contour), 2)
     suma_vekt = biggest_contour.sum(1)
