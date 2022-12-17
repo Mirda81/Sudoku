@@ -11,7 +11,7 @@ slozka_sudoku = r'test_imgs/'
 obrazky = load_sudoku_images(slozka_sudoku)
 priklad = obrazky[0,:,:,:]
 print(obrazky.shape[0])
-for i in range(obrazky.shape[0]-1):
+for i in range(obrazky.shape[0]):
 
     priklad = obrazky[i, :, :, :]
     #model = pickle.lad(open('model.pkl', 'rb'))

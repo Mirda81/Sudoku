@@ -20,19 +20,20 @@ def extract_frame(img):
     thresh = cv2.adaptiveThreshold(img, 255, 0, 1, 9, 5)
     contours, hier = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    biggest_contour = None
+    biggest_contour = []
+    res = []
     max = 0
     for kontura in contours:
         obsah = cv2.contourArea(kontura)
         peri = cv2.arcLength(kontura, True)
         vektory = cv2.approxPolyDP(kontura, 0.01 * peri, True)
-        if (len(vektory == 4)) and (obsah > max):
+        if (len(vektory)==4) and (obsah > max) and (obsah > 20000):
             max = obsah
             biggest_contour = vektory
-
-    cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
-    cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
-    res = cv2.bitwise_and(img, ramecek)
+    if len(biggest_contour) > 0 :
+        cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
+        cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
+        res = cv2.bitwise_and(img, ramecek)
 
     return res, biggest_contour
 def get_corners(contour):

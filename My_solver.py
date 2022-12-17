@@ -94,7 +94,7 @@ def solve_sudoku(matice):
         vyreseno_po = np.count_nonzero(matice)
         # if vyreseno_po == vyreseno:
         #     matice[0,0] = 1
-        if pocitadlo == 1000:
+        if pocitadlo == 100:
             break
         else:
             pocitadlo+=1
