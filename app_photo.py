@@ -4,7 +4,6 @@ from keras.models import load_model
 
 from functions import load_sudoku_images
 from image_processing import Preprocess, extract_frame, Perspective_transform, extract_numbers, predict_numbers,displayNumbers, get_InvPerspective, center_numbers, get_corners
-from solver import solve
 from My_solver import solve_sudoku
 
 slozka_sudoku = r'test_imgs/'
