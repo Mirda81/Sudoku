@@ -3,6 +3,13 @@ import math
 
 
 def get_b_r_c(matrix, x, y):
+    """
+    extract box, row and column from sudoku grid according cell coordination
+    :param matrix: matrix where we need extract data
+    :param x: column number
+    :param y: row number
+    :return: list of values for box, row, column
+    """
     row_full = matrix[x, :]
     col_full = matrix[:, y]
     box_full = matrix[math.floor(x / 3) * 3: math.floor(x / 3) * 3 + 3,
@@ -12,6 +19,9 @@ def get_b_r_c(matrix, x, y):
 
 
 def check_poss(matrix, x, y):
+    """
+    return possible numbers for given empty cell
+    """
     box, row, col = get_b_r_c(matrix, x, y)
     full = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     row_full = [cislo for cislo in row if cislo != 0]
@@ -25,6 +35,10 @@ def check_poss(matrix, x, y):
 
 
 def get_poss_matrix(matrix):
+    """
+    :param matrix: Matrix which we want to solvee
+    :return: matrix with lists of all possible numbers for each cell
+    """
     matice_moznosti = matrix.copy()
     for x in range(9):
         for y in range(9):
@@ -33,13 +47,18 @@ def get_poss_matrix(matrix):
                 matice_moznosti[x, y] = moznosti
     return matice_moznosti
 
+
 def unpack_moznosti(box):
- result = []
- for cell in range(9):
-  hodnota = box[cell]
-  if not isinstance(hodnota, int):
-   result.extend(box[cell])
- return  result
+    """
+    coverting possible numbers to list
+    """
+    result = []
+    for cell in range(9):
+        hodnota = box[cell]
+        if not isinstance(hodnota, int):
+            result.extend(box[cell])
+    return result
+
 
 # matice = np.array([[0, 0, 0, 0, 0, 0, 0, 6, 0],
 #                    [2, 8, 0, 0, 0, 0, 0, 0, 4],
@@ -74,36 +93,36 @@ def unpack_moznosti(box):
 # print(matice[3:6,6:])
 # print(matice_moznosti[3:6,6:])
 def solve_sudoku(matice):
+    """
+    :param matice: matrix which wee want to solve (empty cells =0)
+    :return: solved matrix
+    """
     matice = matice.astype(object)
     pocitadlo = 0
-    while matice.size - np.count_nonzero(matice) >0:
+    while matice.size - np.count_nonzero(matice) > 0:
         matice_moznosti = get_poss_matrix(matice)
         for row in range(9):
             for col in range(9):
-                if matice[row,col] == 0:
-                    moznosti = matice_moznosti[row,col]
+                if matice[row, col] == 0:
+                    moznosti = matice_moznosti[row, col]
 
-                    box_moznosti, row_moznosti, col_moznosti = get_b_r_c(matice_moznosti,row,col)
+                    box_moznosti, row_moznosti, col_moznosti = get_b_r_c(matice_moznosti, row, col)
                     box2 = unpack_moznosti(box_moznosti)
                     col2 = unpack_moznosti(col_moznosti)
                     row2 = unpack_moznosti(row_moznosti)
                     for moznost in moznosti:
-                     if box2.count(moznost) == 1 or col2.count(moznost) == 1 or row2.count(moznost) == 1:
-                      matice[row, col] = moznost
-                      matice_moznosti = get_poss_matrix(matice)
-        vyreseno_po = np.count_nonzero(matice)
+                        if box2.count(moznost) == 1 or col2.count(moznost) == 1 or row2.count(moznost) == 1:
+                            matice[row, col] = moznost
+                            matice_moznosti = get_poss_matrix(matice)
+        # vyreseno_po = np.count_nonzero(matice)
         # if vyreseno_po == vyreseno:
         #     matice[0,0] = 1
         if pocitadlo == 100:
             break
         else:
-            pocitadlo+=1
+            pocitadlo += 1
     print(matice)
     return matice
-
-
-
-
 
 # box_moznosti, row_moznosti, col_moznosti = get_b_r_c(matice_moznosti,3,6)
 # box2 = unpack_moznosti(box_moznosti)

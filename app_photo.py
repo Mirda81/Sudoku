@@ -16,7 +16,7 @@ for i in range(obrazky.shape[0]):
     #model = pickle.lad(open('model.pkl', 'rb'))
     model = load_model('model2.h5')
     prep_img = Preprocess(priklad)
-    frame, contour = extract_frame(prep_img)
+    frame, contour, contour_line = extract_frame(prep_img)
     corners = get_corners(contour)
     result = Perspective_transform(frame,(450,450), corners)
     img, stats, centroids = extract_numbers(result)

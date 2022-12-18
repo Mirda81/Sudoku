@@ -2,13 +2,22 @@ import cv2
 import os
 import numpy as np
 
+
 def Prep(img):
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    ret,thresh = cv2.threshold(img, 125, 255,
-                       cv2.THRESH_BINARY)
+    """
+    :param img: image of number
+    :return: binary image
+    """
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(img, 125, 255,
+                                cv2.THRESH_BINARY)
     return np.array(thresh)
 
+
 def load_digits():
+    """
+    loading digits from folder for model training
+    """
     Slozka = r'Digits/'
     Kategorie = [str(cislo) for cislo in range(10)]
     data2 = []
@@ -23,11 +32,15 @@ def load_digits():
             data2.append([new_arr, label])
     return data2
 
-def load_sudoku_images(slozka):
+
+def load_sudoku_images(file):
+    """
+    loading test images for app_photo
+    """
     data = []
 
-    for img in os.listdir(slozka):
-        img_path = os.path.join(slozka, img)
+    for img in os.listdir(file):
+        img_path = os.path.join(file, img)
         arr = cv2.imread(img_path)
         new_arr = cv2.resize(arr, (540, 540), interpolation=cv2.INTER_LINEAR)
         data.append(new_arr)
