@@ -32,7 +32,7 @@ def extract_frame(img):
         obsah = cv2.contourArea(kontura)
         peri = cv2.arcLength(kontura, True)
         vektory = cv2.approxPolyDP(kontura, 0.01 * peri, True)
-        if (len(vektory) == 4) and (obsah > max) and (obsah > 10000):
+        if (len(vektory) == 4) and (obsah > max) and (obsah > 20000):
             max = obsah
             biggest_contour = vektory
     if len(biggest_contour) > 0:
@@ -135,8 +135,7 @@ def proccesCell(img):
     :param img: image of specific cell with number
     :return: binary iversion image, cropped
     """
-    kernel = np.ones((3, 3), np.uint8)
-    # closing = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+
     ret, thresh = cv2.threshold(img, 125, 255,
                                 cv2.THRESH_BINARY_INV)
     cropped_img = thresh[5:thresh.shape[0] - 5, 5:thresh.shape[0] - 5]

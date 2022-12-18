@@ -1,14 +1,15 @@
 import numpy as np
 from keras.models import load_model
-
+import cvzone
 from image_processing import Preprocess, extract_frame, Perspective_transform, extract_numbers, predict_numbers, \
     displayNumbers, get_InvPerspective, center_numbers, get_corners
 
 from My_solver import solve_sudoku
 import cv2
 import time as t
+from functions import image_overlay_second_method
 
-bkg = cv2.imread('pic.png')
+bkg = cv2.imread('pngegg.png', cv2.IMREAD_UNCHANGED)
 bkg = cv2.resize(bkg, (640, 480))
 prev = 0
 
@@ -38,6 +39,7 @@ success, img = cap.read()
 img_result = img.copy()
 promenna = 7
 solved = False
+nasobek = 1
 # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
 # cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
@@ -122,21 +124,28 @@ while True:
             time_out_corners = t.time() - not_seen_corners
             print(f"time_out_corners: {time_out_corners}")
             if time_out_corners > 2:
-                text1 = "ready to new recognition"
-                color = (255, 0, 0)
+                multiplier = int(time_out_corners//1)
+                if multiplier > (5 * nasobek):
+                    nasobek += 1
+                tecky = 5+multiplier - (5 * nasobek)
+                print(multiplier, nasobek,tecky)
+                text1 = "Searching for grid" + '.' * tecky
+                text2 = "ready to new recognition"
+                color = (255, 255, 0)
                 seen = False
                 seen_corners = 0
                 solved = False
 
         # text writing
-        cv2.rectangle(img_result, (0, 0), (1000, 60), (0, 0, 0), -1)
-        cv2.putText(img=img_result, text=text1, org=(0, 25), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.7,
+        cv2.rectangle(img_result, (0, 0), (1000, 65), (0, 0, 0), -1)
+        cv2.putText(img=img_result, text=text1, org=(25, 35), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.7,
                     color=color, thickness=1)
-        cv2.putText(img=img_result, text=text2, org=(0, 50), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.6,
+        cv2.putText(img=img_result, text=text2, org=(25, 55), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.6,
                     color=color, thickness=1)
 
         # if cv2.waitKey(1) & 0xFF == ord('q'):
         #      break
+
         if solved:
             process = [img, contour_line, frame, result, img_nums, centered_numbers, img_solved, img_result]
             key = cv2.waitKey(1)
@@ -146,8 +155,10 @@ while True:
                 break  # escape
 
             obrazek = process[int(promenna)]
-            cv2.imshow('window', obrazek)
+            img_result = cvzone.overlayPNG(obrazek, bkg, [0, 0])
+            cv2.imshow('window', img_result)
         else:
+            img_result = cvzone.overlayPNG(img_result,bkg, [0,0])
             cv2.imshow('window', img_result)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
