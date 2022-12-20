@@ -51,6 +51,6 @@ def camera_set(width, height):
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-    change brightness to 150
+    # change brightness to 150
     cap.set(10, 150)
     return cap

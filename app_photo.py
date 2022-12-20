@@ -3,7 +3,7 @@ import numpy as np
 from keras.models import load_model
 
 from functions import load_sudoku_images
-from image_processing import Preprocess, extract_frame, Perspective_transform, extract_numbers, predict_numbers,displayNumbers, get_InvPerspective, center_numbers, get_corners
+from image_processing import preprocess, extract_frame, perspective_transform, extract_numbers, predict_numbers,displayNumbers, get_inv_perspective, center_numbers, get_corners
 from My_solver import solve_sudoku
 
 slozka_sudoku = r'test_imgs/'
@@ -15,10 +15,10 @@ for i in range(obrazky.shape[0]):
     priklad = obrazky[i, :, :, :]
     #model = pickle.lad(open('model.pkl', 'rb'))
     model = load_model('model2.h5')
-    prep_img = Preprocess(priklad)
+    prep_img = preprocess(priklad)
     frame, contour, contour_line = extract_frame(prep_img)
     corners = get_corners(contour)
-    result = Perspective_transform(frame,(450,450), corners)
+    result = perspective_transform(frame, (450, 450), corners)
     img, stats, centroids = extract_numbers(result)
     centered_numbers = center_numbers(img, stats, centroids)
     matice = np.zeros((9,9), dtype='uint8')
@@ -45,7 +45,7 @@ for i in range(obrazky.shape[0]):
 # else:
 #     print("Solution don't exist. Model misread digits.")
 # reseni = displayNumbers(mask,matice_cisla,vyresena_cisla)
-    inv = get_InvPerspective(priklad, img_solved, corners)
+    inv = get_inv_perspective(priklad, img_solved, corners)
     combined = cv2.addWeighted(priklad, 0.7, inv, 1, -1)
     cv2.imwrite(f'solved_images/pic{i}.jpeg', combined)
 cv2.imshow("Final2", img)

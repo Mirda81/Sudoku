@@ -1,8 +1,9 @@
 import numpy as np
 from keras.models import load_model
+import tensorflow as tf
 import cvzone
-from image_processing import Preprocess, extract_frame, Perspective_transform, extract_numbers, predict_numbers, \
-    displayNumbers, get_InvPerspective, center_numbers, get_corners
+from image_processing import preprocess, extract_frame, perspective_transform, extract_numbers, predict_numbers, \
+    displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners
 from functions import camera_set
 
 from My_solver import solve_sudoku
@@ -22,8 +23,12 @@ bkg = cv2.imread('pngegg.png', cv2.IMREAD_UNCHANGED)
 bkg = cv2.resize(bkg, (800, 600))
 
 prev = 0
-
-model = load_model('model2.h5')
+model = tf.keras.models.load_model('model2.h5')
+tf.compat.v1.keras.backend.set_learning_phase(0)
+model.compile(optimizer=tf.keras.optimizers.SGD(), loss='mean_squared_error')
+physical_devices = tf.config.experimental.list_physical_devices('GPU')
+for device in physical_devices:
+    tf.config.experimental.set_memory_growth(device, True)
 
 seen = False
 limit_on_cornes = 2
@@ -37,10 +42,10 @@ text2 = ""
 color = (0, 255, 125)
 success, img = cap.read()
 img_result = img.copy()
-promenna = 8
 solved = False
 contour_prev = []
 pocitadlo = 0
+promenna = 10
 # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
 # cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
@@ -51,33 +56,21 @@ while True:
         img_result = img.copy()
         prev = t.time()
         # apply threshold to image
-        prep_img = Preprocess(img_result)
+        prep_img = preprocess(img_result)
         # find biggest 4 side contour and extract sudoku grid
 
-        frame, contour, contour_line = extract_frame(prep_img)
-        # if (len(contour) == 0) and pocitadlo < 5:
-        #     contour = contour_prev
-        #     frame = frame_prev
-        # print('prev cont')
-        # print(contour_prev)
-        # print(f"len con: {len(contour)}")
-        # print('cont')
-        # print(contour)
-
+        frame, contour, contour_line,thresh = extract_frame(prep_img)
         # if countour exist, wait 2 seconds - time to focus grid properly
 
         if len(contour) == 4:
-            # contour_prev = contour.copy()
-            # frame_prev = frame.copy()
             corners = get_corners(contour)
             # draw corners on image
 
             if not solved:
                 cv2.drawContours(img_result, [contour], -1, (0, 255, 0), 2)
             else:
-                for corner in corners:
-                    x, y = corner
-                    cv2.circle(img_result, (int(x), int(y)), 2, (0, 255, 0), -1)
+                draw_corners(img_result, corners)
+
             # start timer when we see a grid
             if seen_corners == 0:
                 seen_corners = t.time()
@@ -98,7 +91,7 @@ while True:
             if time_on_corners > limit_on_cornes:
                 not_seen_corners = 0
                 # make a perspective transformation
-                result = Perspective_transform(frame, (450, 450), corners)
+                result = perspective_transform(frame, (450, 450), corners)
                 # if grid was not seen already predict numbers and solve
                 if not seen:
                     img_nums, stats, centroids = extract_numbers(result)
@@ -132,7 +125,7 @@ while True:
                 # make an inverse transormation
                 mask = np.zeros_like(result)
                 img_solved = displayNumbers(mask, predicted_matrix, solved_matrix)
-                inv = get_InvPerspective(img_result, img_solved, corners)
+                inv = get_inv_perspective(img_result, img_solved, corners)
                 img_result = cv2.addWeighted(img_result, 1, inv, 1, -1)
 
         # if we dont see corners, keep 2 seconds old solution then ready to new solution
@@ -166,15 +159,16 @@ while True:
 
         if solved:
             img2 = img.copy()
-
             try:
                 detected_frame = cv2.drawContours(img2, [contour], -1, (0, 255, 0), 2).copy()
             except:
-                detected_frame = img
+                detected_frame = img2
             # process = [img, contour_line, frame, result, img_nums, centered_numbers, img_solved, img_result]
-            process = [img, detected_frame, contour_line, frame, result, img_nums, centered_numbers, img_solved,img_result]
+            process = [img, prep_img,thresh, detected_frame, contour_line, frame, result, img_nums, centered_numbers,
+                       img_solved, img_result]
+
             key = cv2.waitKey(1)
-            if int(key) in range(49, 58):
+            if int(key) in range(49, 49+len(process)):
                 promenna = int(key) - 49
             if key == 27:
                 break  # escape
@@ -196,5 +190,4 @@ while True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 cap.release()
-result.release()
 cv2.destroyAllWindows()

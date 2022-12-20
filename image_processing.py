@@ -4,7 +4,7 @@ import keras
 import pickle
 
 
-def Preprocess(img):
+def preprocess(img):
     """
     :param img: input image
     :return: blurred gray image
@@ -19,27 +19,26 @@ def extract_frame(img):
     :param img: input image
     :return: image with extracted sudoku grid, biggest contour
     """
-    ramecek = np.zeros((img.shape), np.uint8)
-    res2 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    ramecek = np.zeros(img.shape, np.uint8)
 
     thresh = cv2.adaptiveThreshold(img, 255, 0, 1, 9, 5)
     contours, hier = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     biggest_contour = []
     res = []
-    max = 0
+    max_value = 0
     for kontura in contours:
         obsah = cv2.contourArea(kontura)
         peri = cv2.arcLength(kontura, True)
         vektory = cv2.approxPolyDP(kontura, 0.01 * peri, True)
-        if (len(vektory) == 4) and (obsah > max) and (obsah > 40000):
-            max = obsah
+        if (len(vektory) == 4) and (obsah > max_value) and (obsah > 40000):
+            max_value = obsah
             biggest_contour = vektory
     if len(biggest_contour) > 0:
         cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
         cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
         res = cv2.bitwise_and(img, ramecek)
-    return res, biggest_contour, ramecek
+    return res, biggest_contour, ramecek, thresh
 
 
 def get_corners(contour):
@@ -57,7 +56,7 @@ def get_corners(contour):
     return corners
 
 
-def Perspective_transform(img, shape, corners):
+def perspective_transform(img, shape, corners):
     """
     :param img: input image - numPy array
     :param shape: shape of returned image - tuple (w,h)
@@ -78,7 +77,7 @@ def extract_numbers(img):
     :param img: input binary image
     :return: image with extracted numbers, list of countours stats(left, top, width, height, area), centroid coordinations
     """
-    result = preProcess_numbers(img)
+    result = preprocess_numbers(img)
     retval, labels, stats, centroids = cv2.connectedComponentsWithStats(result)
     viz = np.zeros_like(result, np.uint8)
     centroidy = []
@@ -98,7 +97,7 @@ def extract_numbers(img):
     return viz, stats_numbers, centroidy
 
 
-def preProcess_numbers(img):
+def preprocess_numbers(img):
     """
     :param img: image of number
     :return: processed image
@@ -119,7 +118,6 @@ def center_numbers(img, stats, centroids):
     """
     centered_num_grid = np.zeros_like(img, np.uint8)
     for i, number in enumerate(stats):
-        cropped_num = img[number[1]:number[1] + number[3], number[0]:number[0] + number[2]]
         center = centroids[i]
         offset_x = int(np.round(np.round(center[0] / 25, 0) * 25 - center[0], 0))
         offset_y = int(np.round(np.round(center[1] / 25, 0) * 25 - center[1], 0))
@@ -129,7 +127,7 @@ def center_numbers(img, stats, centroids):
     return centered_num_grid
 
 
-def proccesCell(img):
+def procces_cell(img):
     """
     :param img: image of specific cell with number
     :return: binary iversion image, cropped
@@ -158,7 +156,7 @@ def predict_numbers(numbers, matice, model):
             if np.sum(vysek) == 0:
                 predikce = 0
             else:
-                vysek = proccesCell(vysek)
+                vysek = procces_cell(vysek)
                 vysek = vysek / 255
                 predikce = np.argmax(model.predict(vysek.reshape(1, 40, 40, 1)))
             x += step
@@ -175,20 +173,20 @@ def displayNumbers(img, numbers, solved_num, color=(0, 255, 0)):
     :param color: color of numbers
     :return: image with solved sudoku
     """
-    W = int(img.shape[1] / 9)
-    H = int(img.shape[0] / 9)
+    w = int(img.shape[1] / 9)
+    h = int(img.shape[0] / 9)
     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     for i in range(9):
         for j in range(9):
             if numbers[j, i] == 0:
                 cv2.putText(img, str(solved_num[j, i]),
-                            (i * W + int(W / 2) - int((W / 4)), int((j + 0.7) * H)),
+                            (i * w + int(w / 2) - int((w / 4)), int((j + 0.7) * h)),
                             cv2.FONT_HERSHEY_COMPLEX, 1, color,
                             1, cv2.LINE_AA)
     return img
 
 
-def get_InvPerspective(img, masked_num, location, height=450, width=450):
+def get_inv_perspective(img, masked_num, location, height=450, width=450):
     """
     :param img: original image
     :param masked_num: transformed image with solved sudoku
@@ -206,4 +204,9 @@ def get_InvPerspective(img, masked_num, location, height=450, width=450):
                                                       img.shape[0]))
     return result
 
-def
+
+def draw_corners(img, corners):
+    for corner in corners:
+        x, y = corner
+        cv2.circle(img, (int(x), int(y)), 2, (0, 255, 0), -1)
+    return img
