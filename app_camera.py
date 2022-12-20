@@ -1,34 +1,29 @@
 import numpy as np
-from keras.models import load_model
-import tensorflow as tf
 import cvzone
+from keras.models import load_model
 from image_processing import preprocess, extract_frame, perspective_transform, extract_numbers, predict_numbers, \
-    displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners
+    displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners, write_text
 from functions import camera_set
 
 from My_solver import solve_sudoku
 import cv2
 import time as t
+
 # camera setting
 frameWidth = 800
 frameHeight = 600
 frame_rate = 30
-cap = camera_set(frameWidth,frameHeight)
+cap = camera_set(frameWidth, frameHeight)
 
 result = cv2.VideoWriter('filename.avi',
                          cv2.VideoWriter_fourcc(*'MJPG'),
-                         10, (frameWidth,frameHeight))
+                         10, (frameWidth, frameHeight))
 # load frame image
 bkg = cv2.imread('pngegg.png', cv2.IMREAD_UNCHANGED)
 bkg = cv2.resize(bkg, (800, 600))
 
 prev = 0
-model = tf.keras.models.load_model('model2.h5')
-tf.compat.v1.keras.backend.set_learning_phase(0)
-model.compile(optimizer=tf.keras.optimizers.SGD(), loss='mean_squared_error')
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-for device in physical_devices:
-    tf.config.experimental.set_memory_growth(device, True)
+model = load_model('model2.h5')
 
 seen = False
 limit_on_cornes = 2
@@ -37,15 +32,18 @@ not_seen_corners = t.time() - 2
 time_out_corners = 1
 time_for_recognition = 0
 bad_read = False
-text1 = "ready to new recognition"
+text1 = "Ready to new recognition"
 text2 = ""
-color = (0, 255, 125)
+color1 = (0, 255, 125)
 success, img = cap.read()
 img_result = img.copy()
 solved = False
 contour_prev = []
 pocitadlo = 0
-promenna = 10
+nasobek = 1
+steps_mode = False
+promenna = 0
+rectangle_counter = 0
 # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
 # cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
@@ -59,10 +57,11 @@ while True:
         prep_img = preprocess(img_result)
         # find biggest 4 side contour and extract sudoku grid
 
-        frame, contour, contour_line,thresh = extract_frame(prep_img)
+        frame, contour, contour_line, thresh = extract_frame(prep_img)
+        contour_exist = len(contour) == 4
         # if countour exist, wait 2 seconds - time to focus grid properly
 
-        if len(contour) == 4:
+        if contour_exist:
             corners = get_corners(contour)
             # draw corners on image
 
@@ -89,6 +88,7 @@ while True:
 
             # if we reach 2 sec limit to focus, start main cycle(transfomation, recognition, solving, wrap)
             if time_on_corners > limit_on_cornes:
+                nasobek = 1
                 not_seen_corners = 0
                 # make a perspective transformation
                 result = perspective_transform(frame, (450, 450), corners)
@@ -101,6 +101,7 @@ while True:
                     start_predicition = t.time()
                     predicted_matrix = predict_numbers(centered_numbers, empty_matrix, model)
                     end_prediction = t.time()
+
                     solved_matrix = predicted_matrix.copy()
                     start = t.time()
                     solved_matrix = solve_sudoku(solved_matrix)
@@ -114,9 +115,10 @@ while True:
                         solved = False
                     else:
                         text1 = 'Solved in ' + str(round(end - start, 3)) + ' s'
-                        text2=''
+                        text2 = ''
                         # text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
                         color = (0, 255, 0)
+                        pos1 = (265 ,30)
                         bad_read = False
                         seen = True
                         limit_on_cornes = 2
@@ -133,61 +135,62 @@ while True:
             if not_seen_corners == 0:
                 not_seen_corners = t.time()
             time_out_corners = t.time() - not_seen_corners
-            nasobek = 1
             print(f"time_out_corners: {time_out_corners}")
             if time_out_corners > 2:
-                multiplier = int(time_out_corners//1)
+                multiplier = int(time_out_corners // 1)
                 if multiplier > (5 * nasobek):
                     nasobek += 1
-                tecky = 5+multiplier - (5 * nasobek)
+                tecky = 5 + multiplier - (5 * nasobek)
                 text2 = "Searching for grid" + '.' * tecky
                 text1 = "ready to new recognition"
-                color = (0, 255, 0)
+                color2 = (125, 0, 255)
                 seen = False
                 seen_corners = 0
                 solved = False
-
+                corner_1 = (75+(3*rectangle_counter), 75+(3*rectangle_counter))
+                corner_2 =  (725-(3*rectangle_counter), 525-(3*rectangle_counter))
+                cv2.rectangle(img_result,  corner_1, corner_2, (0, 0, 255), 2)
+                if corner_1[0] > 200:
+                    rectangle_counter = -1
+                rectangle_counter+=1
         # text writing
-        cv2.rectangle(img_result, (0, 0), (1000, 40), (0, 0, 0), -1)
-        cv2.putText(img=img_result, text=text1, org=(250, 30), fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
-                    color=color, thickness=1)
-        cv2.putText(img=img_result, text=text2, org=(275, 60), fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
-                    color=color, thickness=1)
 
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        write_text(img_result,text1,color1,(250, 30),text2,color2,(275, 60))        # if cv2.waitKey(1) & 0xFF == ord('q'):
         #      break
 
-        if solved:
+        if solved and steps_mode:
+
             img2 = img.copy()
-            try:
-                detected_frame = cv2.drawContours(img2, [contour], -1, (0, 255, 0), 2).copy()
-            except:
-                detected_frame = img2
-            # process = [img, contour_line, frame, result, img_nums, centered_numbers, img_solved, img_result]
-            process = [img, prep_img,thresh, detected_frame, contour_line, frame, result, img_nums, centered_numbers,
+            detected_frame = cv2.drawContours(img2, [contour], -1, (0, 255, 0), 2).copy() if contour_exist else img2
+            process = [img, prep_img, thresh, detected_frame, contour_line, frame, result, img_nums, centered_numbers,
                        img_solved, img_result]
 
             key = cv2.waitKey(1)
-            if int(key) in range(49, 49+len(process)):
-                promenna = int(key) - 49
+            if int(key) == 48:
+                promenna = max(0,promenna-1)
+            if int(key) == 49:
+                promenna = min(len(process)-1 , promenna + 1)
             if key == 27:
-                break  # escape
-
+                steps_mode = False  # escape
+            if int(key) == 113:
+                break
+            print(promenna)
             obrazek = process[int(promenna)]
-            if promenna == len(process)-1:
-                img_result = cvzone.overlayPNG(obrazek, bkg, [0, 0])
-                cv2.imshow('sudoku solver', img_result)
-            else:
-                try:
 
-                    cv2.imshow('sudoku solver', obrazek)
-                except:
-                    mask = np.zeros_like(img_result)
-                    cv2.imshow('sudoku solver', mask)
+            try:
+
+                cv2.imshow('sudoku solver', obrazek)
+            except:
+                mask = np.zeros_like(img_result)
+                cv2.imshow('sudoku solver', mask)
+
         else:
-            img_result = cvzone.overlayPNG(img_result,bkg, [0,0])
+            img_result = cvzone.overlayPNG(img_result, bkg, [0, 0])
             cv2.imshow('sudoku solver', img_result)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            key =cv2.waitKey(1)
+            if  int(key) == 109:
+                steps_mode = True
+            if int(key) == 113:
                 break
 cap.release()
 cv2.destroyAllWindows()

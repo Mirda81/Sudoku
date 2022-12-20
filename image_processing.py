@@ -210,3 +210,11 @@ def draw_corners(img, corners):
         x, y = corner
         cv2.circle(img, (int(x), int(y)), 2, (0, 255, 0), -1)
     return img
+
+def write_text(img, text1,color1, pos1, text2,color2, pos2):
+    cv2.rectangle(img, (0, 0), (1000, 40), (0, 0, 0), -1)
+    cv2.putText(img=img, text=text1, org=pos1, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
+            color=color1, thickness=1)
+    cv2.putText(img=img, text=text2, org=pos2, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
+            color=color2, thickness=1)
+    return img
