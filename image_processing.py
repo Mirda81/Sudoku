@@ -32,14 +32,13 @@ def extract_frame(img):
         obsah = cv2.contourArea(kontura)
         peri = cv2.arcLength(kontura, True)
         vektory = cv2.approxPolyDP(kontura, 0.01 * peri, True)
-        if (len(vektory) == 4) and (obsah > max) and (obsah > 20000):
+        if (len(vektory) == 4) and (obsah > max) and (obsah > 40000):
             max = obsah
             biggest_contour = vektory
     if len(biggest_contour) > 0:
         cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
         cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
         res = cv2.bitwise_and(img, ramecek)
-
     return res, biggest_contour, ramecek
 
 
@@ -206,3 +205,5 @@ def get_InvPerspective(img, masked_num, location, height=450, width=450):
     result = cv2.warpPerspective(masked_num, matrix, (img.shape[1],
                                                       img.shape[0]))
     return result
+
+def
