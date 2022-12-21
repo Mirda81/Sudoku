@@ -117,6 +117,7 @@ def center_numbers(img, stats, centroids):
     :return: image with centered number to grid
     """
     centered_num_grid = np.zeros_like(img, np.uint8)
+    matrix_mask = np.zeros((9, 9), dtype='uint8')
     for i, number in enumerate(stats):
         center = centroids[i]
         offset_x = int(np.round(np.round(center[0] / 25, 0) * 25 - center[0], 0))
@@ -124,18 +125,18 @@ def center_numbers(img, stats, centroids):
         centered_num_grid[number[1] + offset_y:number[1] + number[3] + offset_y,
         number[0] + offset_x:number[0] + number[2] + offset_x] = img[number[1]:number[1] + number[3],
                                                                  number[0]:number[0] + number[2]]
-    return centered_num_grid
+        y = int(np.round((center[0]+5) / 50,1))
+        x = int(np.round((center[1]+5) / 50,1))
+        matrix_mask[x,y] = 1
+    return centered_num_grid, matrix_mask
 
 
 def procces_cell(img):
     """
     :param img: image of specific cell with number
-    :return: binary iversion image, cropped
-    """
+    :return: binary iversion image, cropped   """
 
-    ret, thresh = cv2.threshold(img, 125, 255,
-                                cv2.THRESH_BINARY_INV)
-    cropped_img = thresh[5:thresh.shape[0] - 5, 5:thresh.shape[0] - 5]
+    cropped_img = img[5:img.shape[0] - 5, 5:img.shape[0] - 5]
     resized = cv2.resize(cropped_img, (40, 40))
     return resized
 
@@ -145,23 +146,18 @@ def predict_numbers(numbers, matice, model):
     :param numbers: image with extracted numbers
     :param matice: empty matrix
     :param model: model for prediction
-    :return: matrix with predicted numbers, empty cells = 0
-    """
-    y = 0
-    step = 50
-    while y < 450:
-        x = 0
-        while x < 450:
-            vysek = numbers[y:y + 50, x:x + 50]
-            if np.sum(vysek) == 0:
-                predikce = 0
-            else:
+    :return: matrix with predicted numbers, empty cells = 0    """
+    ret, numbers = cv2.threshold(numbers, 125, 255,
+                                cv2.THRESH_BINARY_INV)
+    for row in range(9):
+        for col in range(9):
+            if matice[row,col] == 1:
+                vysek = numbers[50*row: (50*row)+50, 50*col: (50*col)+50]
                 vysek = procces_cell(vysek)
                 vysek = vysek / 255
                 predikce = np.argmax(model.predict(vysek.reshape(1, 40, 40, 1)))
-            x += step
-            matice[int(y / 50), int(x / 50) - 1] = predikce
-        y += step
+                matice[row, col] = predikce
+    print(matice)
     return matice
 
 

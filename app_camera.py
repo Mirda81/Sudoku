@@ -96,11 +96,11 @@ while True:
                 # if grid was not seen already predict numbers and solve
                 if not seen:
                     img_nums, stats, centroids = extract_numbers(result)
-                    centered_numbers = center_numbers(img_nums, stats, centroids)
+                    centered_numbers,matrix_mask = center_numbers(img_nums, stats, centroids)
                     empty_matrix = np.zeros((9, 9), dtype='uint8')
 
                     start_predicition = t.time()
-                    predicted_matrix = predict_numbers(centered_numbers, empty_matrix, model)
+                    predicted_matrix = predict_numbers(centered_numbers, matrix_mask, model)
                     end_prediction = t.time()
 
                     solved_matrix = predicted_matrix.copy()
