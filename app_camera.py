@@ -117,7 +117,7 @@ while True:
                     else:
                         text1 = 'Solved in ' + str(round(end - start, 3)) + ' s'
                         text2 = ''
-                        # text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
+                        text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
                         color = (0, 255, 0)
                         pos1 = (265 ,30)
                         bad_read = False

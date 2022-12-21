@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import keras
 import pickle
-
+import tensorflow as tf
 
 def preprocess(img):
     """
@@ -149,17 +149,30 @@ def predict_numbers(numbers, matice, model):
     :return: matrix with predicted numbers, empty cells = 0    """
     ret, numbers = cv2.threshold(numbers, 125, 255,
                                 cv2.THRESH_BINARY_INV)
+    pred_list = []
     for row in range(9):
         for col in range(9):
             if matice[row,col] == 1:
                 vysek = numbers[50*row: (50*row)+50, 50*col: (50*col)+50]
                 vysek = procces_cell(vysek)
                 vysek = vysek / 255
-                predikce = np.argmax(model.predict(vysek.reshape(1, 40, 40, 1)))
-                matice[row, col] = predikce
+                vysek = vysek.reshape(1, 40, 40, 1)
+                pred_list.append(vysek)
+                # predikce = np.argmax(model.predict(vysek))
+                # matice[row, col] = predikce
+    all_preds = model.predict(tf.reshape(np.array(pred_list),(np.sum(matice), 40, 40,1)))
+    preds = list(map(np.argmax,all_preds))
+    rovna_matice = list(matice.flatten())
+    i=0
+    for cislo, znak in enumerate(rovna_matice):
+        if znak == 1:
+            rovna_matice[cislo] = preds[i]
+            i+=1
+    rovna_matice = np.array(rovna_matice)
+    matice = rovna_matice.reshape(9,9)
+    print(preds)
     print(matice)
     return matice
-
 
 def displayNumbers(img, numbers, solved_num, color=(0, 255, 0)):
     """
