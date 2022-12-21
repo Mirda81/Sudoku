@@ -35,6 +35,7 @@ bad_read = False
 text1 = "Ready to new recognition"
 text2 = ""
 color1 = (0, 255, 125)
+color2 = (0, 255, 125)
 success, img = cap.read()
 img_result = img.copy()
 solved = False
