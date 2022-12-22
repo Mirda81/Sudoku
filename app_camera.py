@@ -32,10 +32,9 @@ not_seen_corners = t.time() - 2
 time_out_corners = 1
 time_for_recognition = 0
 bad_read = False
-text1 = "Ready to new recognition"
 text2 = ""
-color1 = (0, 255, 125)
-color2 = (0, 255, 125)
+color1 = (0, 255, 0)
+color2 = (0, 255, 0)
 success, img = cap.read()
 img_result = img.copy()
 solved = False
@@ -45,12 +44,15 @@ nasobek = 1
 steps_mode = False
 promenna = 0
 rectangle_counter = 0
+wait = 0.8
+time_on_corners=0
 # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
 # cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
 while True:
     time_elapsed = t.time() - prev
     if time_elapsed > 1. / frame_rate:
+        start = t.time()
         success, img = cap.read()
         img_result = img.copy()
         prev = t.time()
@@ -65,9 +67,19 @@ while True:
         if contour_exist:
             corners = get_corners(contour)
             # draw corners on image
+            not_seen_corners = 0
+
 
             if not solved:
-                cv2.drawContours(img_result, [contour], -1, (0, 255, 0), 2)
+                if bad_read:
+                    color = (0, 0, 255)
+                    text1 = 'model misread digits'
+                    text2 = "new digit recocgnition starts in " + str(round(3 - time_on_corners, 2))
+                    wait = 3
+                else:
+                    text1 = "sudoku grid detected"
+                    color = (0,0,255) if int((10 *time_on_corners)) % 3 == 0 else (0,255,0)
+                cv2.drawContours(img_result, [contour], -1, color, 2)
             else:
                 draw_corners(img_result, corners)
 
@@ -76,21 +88,20 @@ while True:
                 seen_corners = t.time()
             time_on_corners = t.time() - seen_corners
             # when model misread digit before, give 3 sec to adjust camera before new recognition cycle
-            if time_on_corners < limit_on_cornes:
-                if bad_read:
-                    text1 = 'model misread digits'
-                    text2 = "new digit recocgnition starts in " + str(round(3 - time_on_corners, 2))
-                else:
-                    text1 = "Sudoku frame detected"
-                    text2 = "digit recocgnition starts in " + str(round(2 - time_on_corners, 2))
-                    color = (0, 255, 0)
+
+       # else:
+            #     text1 = "Sudoku frame detected"
+
+
+
 
             print(f"time_on_corners: {time_on_corners}")
 
             # if we reach 2 sec limit to focus, start main cycle(transfomation, recognition, solving, wrap)
-            if time_on_corners > limit_on_cornes:
+            if time_on_corners > wait:
+                wait = 0.8
                 nasobek = 1
-                not_seen_corners = 0
+
                 # make a perspective transformation
                 result = perspective_transform(frame, (450, 450), corners)
                 # if grid was not seen already predict numbers and solve
@@ -116,14 +127,15 @@ while True:
                         solved = False
                     else:
                         text1 = 'Solved in ' + str(round(end - start, 3)) + ' s'
-                        text2 = ''
                         text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
-                        color = (0, 255, 0)
+                        color1 = (0, 255, 0)
+                        color2 = (0, 255, 0)
                         pos1 = (265 ,30)
                         bad_read = False
                         seen = True
                         limit_on_cornes = 2
                         solved = True
+                        wait = 0.5
 
                 # make an inverse transormation
                 mask = np.zeros_like(result)
@@ -143,11 +155,14 @@ while True:
                     nasobek += 1
                 tecky = 5 + multiplier - (5 * nasobek)
                 text2 = "Searching for grid" + '.' * tecky
-                text1 = "ready to new recognition"
-                color2 = (125, 0, 255)
+                text1 = "Ready"
+                color1 = (255,255,255)
+                color2 = (125,255,125)
                 seen = False
                 seen_corners = 0
                 solved = False
+                wait = 0.8
+                bad_read = False
                 corner_1 = (75+(3*rectangle_counter), 75+(3*rectangle_counter))
                 corner_2 =  (725-(3*rectangle_counter), 525-(3*rectangle_counter))
                 cv2.rectangle(img_result,  corner_1, corner_2, (0, 0, 255), 2)
@@ -156,7 +171,7 @@ while True:
                 rectangle_counter+=1
         # text writing
 
-        write_text(img_result,text1,color1,(250, 30),text2,color2,(275, 60))        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        write_text(img_result,text1,color1,(320, 30),text2,color2,(275, 60))        # if cv2.waitKey(1) & 0xFF == ord('q'):
         #      break
 
         if solved and steps_mode:
@@ -193,5 +208,6 @@ while True:
                 steps_mode = True
             if int(key) == 113:
                 break
+        print(t.time()-start)
 cap.release()
 cv2.destroyAllWindows()
