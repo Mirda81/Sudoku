@@ -2,7 +2,7 @@ import numpy as np
 import cvzone
 from keras.models import load_model
 from image_processing import preprocess, extract_frame, perspective_transform, extract_numbers, predict_numbers, \
-    displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners, write_text
+    displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners, text_on_top,bottom_text
 from functions import camera_set
 
 from My_solver import solve_sudoku
@@ -46,6 +46,8 @@ promenna = 0
 rectangle_counter = 0
 wait = 0.8
 time_on_corners=0
+text1_b = ""
+text2_b = ""
 # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
 # cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
@@ -72,7 +74,8 @@ while True:
 
             if not solved:
                 if bad_read:
-                    color = (0, 0, 255)
+                    color1 = (0, 0, 255)
+                    color2 = (0, 140, 255)
                     text1 = 'model misread digits'
                     text2 = "new digit recocgnition starts in " + str(round(3 - time_on_corners, 2))
                     wait = 3
@@ -127,7 +130,7 @@ while True:
                         solved = False
                     else:
                         text1 = 'Solved in ' + str(round(end - start, 3)) + ' s'
-                        text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
+                        # text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
                         color1 = (0, 255, 0)
                         color2 = (0, 255, 0)
                         pos1 = (265 ,30)
@@ -136,6 +139,8 @@ while True:
                         limit_on_cornes = 2
                         solved = True
                         wait = 0.5
+                        text1_b = "press ""s"" to save solution"
+                        text2_b = "press ""m"" to enter steps mode"
 
                 # make an inverse transormation
                 mask = np.zeros_like(result)
@@ -171,7 +176,8 @@ while True:
                 rectangle_counter+=1
         # text writing
 
-        write_text(img_result,text1,color1,(320, 30),text2,color2,(275, 60))        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        text_on_top(img_result, text1, color1, (320, 30), text2, color2, (275, 60))        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        bottom_text(img_result,text1_b,(125,125,140),(230,560),text2_b,(255,0,0),(230,580))
         #      break
 
         if solved and steps_mode:

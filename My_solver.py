@@ -84,6 +84,8 @@ def solve_sudoku(matice):
                         if box2.count(moznost) == 1 or col2.count(moznost) == 1 or row2.count(moznost) == 1:
                             matice[row, col] = moznost
                             matice_moznosti = get_poss_matrix(matice)
+
+
         # vyreseno_po = np.count_nonzero(matice)
         # if vyreseno_po == vyreseno:
         #     matice[0,0] = 1
@@ -91,7 +93,7 @@ def solve_sudoku(matice):
             break
         else:
             pocitadlo += 1
-    print(matice)
+    # print(matice)
     return matice
 
 # box_moznosti, row_moznosti, col_moznosti = get_b_r_c(matice_moznosti,3,6)
@@ -119,17 +121,17 @@ def solve_sudoku(matice):
 #  [7, 5, 0, 0, 2, 0, 0, 0, 0],
 #  [0, 6, 0, 0, 5, 1, 0, 0, 2],
 #  [3, 0, 0, 4, 0, 0, 5, 0, 8]], dtype=object)
-
-matice = np.array([[8,0,0,0,1, 0, 0, 0, 9],
- [0, 5, 0, 8, 0, 7, 0, 1, 0],
- [0, 0, 4, 0, 9, 0, 7, 0, 0],
- [0, 6, 0, 7, 0, 1, 0, 2, 0],
- [5, 0, 8, 0, 6, 0, 1, 0, 7],
- [0, 1, 0, 5, 0, 2, 0, 9, 0],
- [0, 0, 7, 0, 4, 0, 6, 0, 0],
- [0, 8, 0, 3, 0, 9, 0, 4, 0],
- [3, 0, 0, 0, 5, 0, 0, 0, 8]], dtype=object)
-# print(matice[3:6,6:])
-# print(matice_moznosti[3:6,6:])
-
-print(solve_sudoku(matice))
+#
+# # matice = np.array([[8,0,0,0,1, 0, 0, 0, 9],
+# #  [0, 5, 0, 8, 0, 7, 0, 1, 0],
+# #  [0, 0, 4, 0, 9, 0, 7, 0, 0],
+# #  [0, 6, 0, 7, 0, 1, 0, 2, 0],
+# #  [5, 0, 8, 0, 6, 0, 1, 0, 7],
+# #  [0, 1, 0, 5, 0, 2, 0, 9, 0],
+# #  [0, 0, 7, 0, 4, 0, 6, 0, 0],
+# #  [0, 8, 0, 3, 0, 9, 0, 4, 0],
+# #  [3, 0, 0, 0, 5, 0, 0, 0, 8]], dtype=object)
+# # print(matice[3:6,6:])
+# # print(matice_moznosti[3:6,6:])
+#
+# print(solve_sudoku(matice))
