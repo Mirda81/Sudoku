@@ -36,7 +36,7 @@ def check_poss(matrix, x, y):
 
 def get_poss_matrix(matrix):
     """
-    :param matrix: Matrix which we want to solvee
+    :param matrix: Matrix which we want to solve
     :return: matrix with lists of all possible numbers for each cell
     """
     matice_moznosti = matrix.copy()
@@ -60,38 +60,7 @@ def unpack_moznosti(box):
     return result
 
 
-# matice = np.array([[0, 0, 0, 0, 0, 0, 0, 6, 0],
-#                    [2, 8, 0, 0, 0, 0, 0, 0, 4],
-#                    [0, 0, 7, 0, 0, 5, 8, 0, 0],
-#                    [5, 0, 0, 3, 4, 0, 0, 2, 0],
-#                    [4, 0, 0, 5, 0, 1, 0, 0, 8],
-#                    [0, 1, 0, 0, 7, 6, 0, 0, 3],
-#                    [0, 0, 5, 1, 0, 0, 2, 0, 0],
-#                    [3, 0, 0, 0, 0, 0, 0, 8, 1],
-#                    [0, 9, 0, 0, 0, 0, 0, 0, 0]], dtype=object)
 
-
-# matice = np.array([[2,0,5,0,0, 7, 0, 0, 6],
-#  [4, 0, 0, 9, 6, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 8, 0, 0, 4, 5],
-#  [9, 8, 0, 0, 7, 4, 0, 0, 0],
-#  [5, 7, 0, 8, 0, 2, 0, 6, 9],
-#  [0, 0, 0, 6, 3, 0, 0, 5, 7],
-#  [7, 5, 0, 0, 2, 0, 0, 0, 0],
-#  [0, 6, 0, 0, 5, 1, 0, 0, 2],
-#  [3, 0, 0, 4, 0, 0, 5, 0, 8]], dtype=object)
-
-# matice = np.array([[8,0,0,0,1, 0, 0, 0, 9],
-#  [0, 5, 0, 8, 0, 7, 0, 1, 0],
-#  [0, 0, 4, 0, 9, 0, 7, 0, 0],
-#  [0, 6, 0, 7, 0, 1, 0, 2, 0],
-#  [5, 0, 8, 0, 6, 0, 1, 0, 7],
-#  [0, 1, 0, 5, 0, 2, 0, 9, 0],
-#  [0, 0, 7, 0, 4, 0, 6, 0, 0],
-#  [0, 8, 0, 3, 0, 9, 0, 4, 0],
-#  [3, 0, 0, 0, 5, 0, 0, 0, 8]], dtype=object)
-# print(matice[3:6,6:])
-# print(matice_moznosti[3:6,6:])
 def solve_sudoku(matice):
     """
     :param matice: matrix which wee want to solve (empty cells =0)
@@ -105,7 +74,8 @@ def solve_sudoku(matice):
             for col in range(9):
                 if matice[row, col] == 0:
                     moznosti = matice_moznosti[row, col]
-
+                    if len(moznosti) == 1:
+                        matice[row, col] = moznosti[0]
                     box_moznosti, row_moznosti, col_moznosti = get_b_r_c(matice_moznosti, row, col)
                     box2 = unpack_moznosti(box_moznosti)
                     col2 = unpack_moznosti(col_moznosti)
@@ -129,3 +99,37 @@ def solve_sudoku(matice):
 # box2.count(1)
 # print(box2)
 # print(box2.count(1))
+# matice = np.array([[0, 0, 0, 0, 0, 0, 0, 6, 0],
+#                    [2, 8, 0, 0, 0, 0, 0, 0, 4],
+#                    [0, 0, 7, 0, 0, 5, 8, 0, 0],
+#                    [5, 0, 0, 3, 4, 0, 0, 2, 0],
+#                    [4, 0, 0, 5, 0, 1, 0, 0, 8],
+#                    [0, 1, 0, 0, 7, 6, 0, 0, 3],
+#                    [0, 0, 5, 1, 0, 0, 2, 0, 0],
+#                    [3, 0, 0, 0, 0, 0, 0, 8, 1],
+#                    [0, 9, 0, 0, 0, 0, 0, 0, 0]], dtype=object)
+
+
+# matice = np.array([[2,0,5,0,0, 7, 0, 0, 6],
+#  [4, 0, 0, 9, 6, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 8, 0, 0, 4, 5],
+#  [9, 8, 0, 0, 7, 4, 0, 0, 0],
+#  [5, 7, 0, 8, 0, 2, 0, 6, 9],
+#  [0, 0, 0, 6, 3, 0, 0, 5, 7],
+#  [7, 5, 0, 0, 2, 0, 0, 0, 0],
+#  [0, 6, 0, 0, 5, 1, 0, 0, 2],
+#  [3, 0, 0, 4, 0, 0, 5, 0, 8]], dtype=object)
+
+matice = np.array([[8,0,0,0,1, 0, 0, 0, 9],
+ [0, 5, 0, 8, 0, 7, 0, 1, 0],
+ [0, 0, 4, 0, 9, 0, 7, 0, 0],
+ [0, 6, 0, 7, 0, 1, 0, 2, 0],
+ [5, 0, 8, 0, 6, 0, 1, 0, 7],
+ [0, 1, 0, 5, 0, 2, 0, 9, 0],
+ [0, 0, 7, 0, 4, 0, 6, 0, 0],
+ [0, 8, 0, 3, 0, 9, 0, 4, 0],
+ [3, 0, 0, 0, 5, 0, 0, 0, 8]], dtype=object)
+# print(matice[3:6,6:])
+# print(matice_moznosti[3:6,6:])
+
+print(solve_sudoku(matice))
