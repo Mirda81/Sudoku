@@ -4,6 +4,7 @@ from keras.models import load_model
 from image_processing import preprocess, extract_frame, perspective_transform, extract_numbers, predict_numbers, \
     displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners, text_on_top,bottom_text
 from functions import camera_set
+from Sudoku_solver import solve
 
 from My_solver import solve_sudoku
 import cv2
@@ -119,7 +120,7 @@ while True:
 
                     solved_matrix = predicted_matrix.copy()
                     start = t.time()
-                    solved_matrix = solve_sudoku(solved_matrix)
+                    solved_matrix = solve(solved_matrix)
                     end = t.time()
                     # check if sudoko was solved succesfuly
                     if np.any(solved_matrix == 0):
