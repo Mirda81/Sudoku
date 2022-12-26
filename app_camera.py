@@ -5,6 +5,7 @@ from image_processing import preprocess, extract_frame, perspective_transform, e
     displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners, text_on_top,bottom_text
 from functions import camera_set
 from Sudoku_solver import solve
+from test import solve_wrapper
 
 from My_solver import solve_sudoku
 import cv2
@@ -119,9 +120,9 @@ while True:
                     end_prediction = t.time()
 
                     solved_matrix = predicted_matrix.copy()
-                    start = t.time()
-                    solved_matrix = solve(solved_matrix)
-                    end = t.time()
+                    solved_matrix, time = solve_wrapper(solved_matrix)
+                    print(solved_matrix)
+
                     # check if sudoko was solved succesfuly
                     if np.any(solved_matrix == 0):
                         seen_corners = 0
@@ -130,7 +131,7 @@ while True:
                         limit_on_cornes = 3
                         solved = False
                     else:
-                        text1 = 'Solved in ' + str(round(end - start, 3)) + ' s'
+                        text1 = time
                         # text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
                         color1 = (0, 255, 0)
                         color2 = (0, 255, 0)
