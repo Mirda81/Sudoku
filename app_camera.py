@@ -114,7 +114,9 @@ while True:
                     img_nums, stats, centroids = extract_numbers(result)
                     centered_numbers,matrix_mask = center_numbers(img_nums, stats, centroids)
                     empty_matrix = np.zeros((9, 9), dtype='uint8')
-
+                    cv2.imshow('numbers',centered_numbers)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        break
                     start_predicition = t.time()
                     predicted_matrix = predict_numbers(centered_numbers, matrix_mask, model)
                     end_prediction = t.time()
@@ -178,7 +180,7 @@ while True:
                 rectangle_counter+=1
         # text writing
 
-        text_on_top(img_result, text1, color1, (320, 30), text2, color2, (275, 60))        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        text_on_top(img_result, text1, color1, (320, 30), text2, color2, (275, 60))
         bottom_text(img_result,text1_b,(125,125,140),(230,560),text2_b,(255,0,0),(230,580))
         #      break
 
