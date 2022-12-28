@@ -51,7 +51,7 @@ opt = keras.optimizers.SGD(lr=0.005, momentum=0.9)
 model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 # fit model
 model.summary()
-history = model.fit(X_train, train_y_one_hot, epochs=10, batch_size=64, validation_data=(X_test, test_y_one_hot),
+history = model.fit(X_train, train_y_one_hot, epochs=10, batch_size=32, validation_data=(X_test, test_y_one_hot),
                     verbose=1)
 
 model.save('model3.h5')

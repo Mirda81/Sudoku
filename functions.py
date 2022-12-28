@@ -10,7 +10,7 @@ def Prep(img):
     """
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(img, 125, 255,
-                                cv2.THRESH_BINARY)
+                                cv2.THRESH_BINARY_INV)
     return np.array(thresh)
 
 

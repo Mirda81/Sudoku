@@ -2,7 +2,7 @@ import numpy as np
 import cvzone
 from keras.models import load_model
 from image_processing import preprocess, extract_frame, perspective_transform, extract_numbers, predict_numbers, \
-    displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners, text_on_top,bottom_text
+    displayNumbers, get_inv_perspective, center_numbers, get_corners, draw_corners, text_on_top, bottom_text
 from functions import camera_set
 from Sudoku_solver import solve
 from test import solve_wrapper
@@ -25,7 +25,7 @@ bkg = cv2.imread('pngegg.png', cv2.IMREAD_UNCHANGED)
 bkg = cv2.resize(bkg, (800, 600))
 
 prev = 0
-model = load_model('model2.h5')
+model = load_model('model3.h5')
 
 seen = False
 limit_on_cornes = 2
@@ -47,7 +47,7 @@ steps_mode = False
 promenna = 0
 rectangle_counter = 0
 wait = 0.8
-time_on_corners=0
+time_on_corners = 0
 text1_b = ""
 text2_b = ""
 # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
@@ -73,7 +73,6 @@ while True:
             # draw corners on image
             not_seen_corners = 0
 
-
             if not solved:
                 if bad_read:
                     color1 = (0, 0, 255)
@@ -83,7 +82,7 @@ while True:
                     wait = 3
                 else:
                     text1 = "sudoku grid detected"
-                    color = (0,0,255) if int((10 *time_on_corners)) % 3 == 0 else (0,255,0)
+                    color = (0, 0, 255) if int((10 * time_on_corners)) % 3 == 0 else (0, 255, 0)
                 cv2.drawContours(img_result, [contour], -1, color, 2)
             else:
                 draw_corners(img_result, corners)
@@ -94,11 +93,8 @@ while True:
             time_on_corners = t.time() - seen_corners
             # when model misread digit before, give 3 sec to adjust camera before new recognition cycle
 
-       # else:
+            # else:
             #     text1 = "Sudoku frame detected"
-
-
-
 
             print(f"time_on_corners: {time_on_corners}")
 
@@ -112,9 +108,9 @@ while True:
                 # if grid was not seen already predict numbers and solve
                 if not seen:
                     img_nums, stats, centroids = extract_numbers(result)
-                    centered_numbers,matrix_mask = center_numbers(img_nums, stats, centroids)
+                    centered_numbers, matrix_mask = center_numbers(img_nums, stats, centroids)
                     empty_matrix = np.zeros((9, 9), dtype='uint8')
-                    cv2.imshow('numbers',centered_numbers)
+                    cv2.imshow('numbers', centered_numbers)
                     if cv2.waitKey(1) & 0xFF == ord('q'):
                         break
                     start_predicition = t.time()
@@ -137,7 +133,7 @@ while True:
                         # text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
                         color1 = (0, 255, 0)
                         color2 = (0, 255, 0)
-                        pos1 = (265 ,30)
+                        pos1 = (265, 30)
                         bad_read = False
                         seen = True
                         limit_on_cornes = 2
@@ -165,23 +161,23 @@ while True:
                 tecky = 5 + multiplier - (5 * nasobek)
                 text2 = "Searching for grid" + '.' * tecky
                 text1 = "Ready"
-                color1 = (255,255,255)
-                color2 = (125,255,125)
+                color1 = (255, 255, 255)
+                color2 = (125, 255, 125)
                 seen = False
                 seen_corners = 0
                 solved = False
                 wait = 0.8
                 bad_read = False
-                corner_1 = (75+(3*rectangle_counter), 75+(3*rectangle_counter))
-                corner_2 =  (725-(3*rectangle_counter), 525-(3*rectangle_counter))
-                cv2.rectangle(img_result,  corner_1, corner_2, (0, 0, 255), 2)
+                corner_1 = (75 + (3 * rectangle_counter), 75 + (3 * rectangle_counter))
+                corner_2 = (725 - (3 * rectangle_counter), 525 - (3 * rectangle_counter))
+                cv2.rectangle(img_result, corner_1, corner_2, (0, 0, 255), 2)
                 if corner_1[0] > 200:
                     rectangle_counter = -1
-                rectangle_counter+=1
+                rectangle_counter += 1
         # text writing
 
         text_on_top(img_result, text1, color1, (320, 30), text2, color2, (275, 60))
-        bottom_text(img_result,text1_b,(125,125,140),(230,560),text2_b,(255,0,0),(230,580))
+        bottom_text(img_result, text1_b, (125, 125, 140), (230, 560), text2_b, (255, 0, 0), (230, 580))
         #      break
 
         if solved and steps_mode:
@@ -193,9 +189,9 @@ while True:
 
             key = cv2.waitKey(1)
             if int(key) == 48:
-                promenna = max(0,promenna-1)
+                promenna = max(0, promenna - 1)
             if int(key) == 49:
-                promenna = min(len(process)-1 , promenna + 1)
+                promenna = min(len(process) - 1, promenna + 1)
             if key == 27:
                 steps_mode = False  # escape
             if int(key) == 113:
@@ -213,11 +209,11 @@ while True:
         else:
             img_result = cvzone.overlayPNG(img_result, bkg, [0, 0])
             cv2.imshow('sudoku solver', img_result)
-            key =cv2.waitKey(1)
-            if  int(key) == 109:
+            key = cv2.waitKey(1)
+            if int(key) == 109:
                 steps_mode = True
             if int(key) == 113:
                 break
-        print(t.time()-start)
+        print(t.time() - start)
 cap.release()
 cv2.destroyAllWindows()

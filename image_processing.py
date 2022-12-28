@@ -147,8 +147,8 @@ def predict_numbers(numbers, matice, model):
     :param matice: empty matrix
     :param model: model for prediction
     :return: matrix with predicted numbers, empty cells = 0    """
-    ret, numbers = cv2.threshold(numbers, 125, 255,
-                                cv2.THRESH_BINARY_INV)
+    # ret, numbers = cv2.threshold(numbers, 125, 255,
+    #                             cv2.THRESH_BINARY_INV)
     pred_list = []
     for row in range(9):
         for col in range(9):
@@ -161,8 +161,11 @@ def predict_numbers(numbers, matice, model):
                 # predikce = np.argmax(model.predict(vysek))
                 # matice[row, col] = predikce
     all_preds = model.predict(tf.reshape(np.array(pred_list),(np.sum(matice), 40, 40,1)))
+    proba = [np.max(predikce) for predikce in all_preds]
+    print(proba)
     preds = list(map(np.argmax,all_preds))
     rovna_matice = list(matice.flatten())
+
     i=0
     for cislo, znak in enumerate(rovna_matice):
         if znak == 1:
