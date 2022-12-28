@@ -108,6 +108,9 @@ while True:
                 # if grid was not seen already predict numbers and solve
                 if not seen:
                     img_nums, stats, centroids = extract_numbers(result)
+                    cv2.imshow('numbers', img_nums)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        break
                     centered_numbers, matrix_mask = center_numbers(img_nums, stats, centroids)
                     empty_matrix = np.zeros((9, 9), dtype='uint8')
                     cv2.imshow('numbers', centered_numbers)

@@ -4,6 +4,7 @@ import keras
 import pickle
 import tensorflow as tf
 
+
 def preprocess(img):
     """
     :param img: input image
@@ -119,15 +120,21 @@ def center_numbers(img, stats, centroids):
     centered_num_grid = np.zeros_like(img, np.uint8)
     matrix_mask = np.zeros((9, 9), dtype='uint8')
     for i, number in enumerate(stats):
+        left, top, width, height, area = stats[i]
+        img_left = int(((left // 50)) * 50 + ((50 - width) / 2))
+        img_top = int(((top // 50)) * 50 + ((50 - height) / 2))
         center = centroids[i]
         offset_x = int(np.round(np.round(center[0] / 25, 0) * 25 - center[0], 0))
         offset_y = int(np.round(np.round(center[1] / 25, 0) * 25 - center[1], 0))
-        centered_num_grid[number[1] + offset_y:number[1] + number[3] + offset_y,
-        number[0] + offset_x:number[0] + number[2] + offset_x] = img[number[1]:number[1] + number[3],
+        # centered_num_grid[number[1] + offset_y:number[1] + number[3] + offset_y,
+        # number[0] + offset_x:number[0] + number[2] + offset_x] = img[number[1]:number[1] + number[3],
+        #                                                          number[0]:number[0] + number[2]]
+        centered_num_grid[img_top:img_top + height,
+        img_left: img_left + width] = img[number[1]:number[1] + number[3],
                                                                  number[0]:number[0] + number[2]]
-        y = int(np.round((center[0]+5) / 50,1))
-        x = int(np.round((center[1]+5) / 50,1))
-        matrix_mask[x,y] = 1
+        y = int(np.round((center[0] + 5) / 50, 1))
+        x = int(np.round((center[1] + 5) / 50, 1))
+        matrix_mask[x, y] = 1
     return centered_num_grid, matrix_mask
 
 
@@ -152,30 +159,31 @@ def predict_numbers(numbers, matice, model):
     pred_list = []
     for row in range(9):
         for col in range(9):
-            if matice[row,col] == 1:
-                vysek = numbers[50*row: (50*row)+50, 50*col: (50*col)+50]
+            if matice[row, col] == 1:
+                vysek = numbers[50 * row: (50 * row) + 50, 50 * col: (50 * col) + 50]
                 vysek = procces_cell(vysek)
                 vysek = vysek / 255
                 vysek = vysek.reshape(1, 40, 40, 1)
                 pred_list.append(vysek)
                 # predikce = np.argmax(model.predict(vysek))
                 # matice[row, col] = predikce
-    all_preds = model.predict(tf.reshape(np.array(pred_list),(np.sum(matice), 40, 40,1)))
+    all_preds = model.predict(tf.reshape(np.array(pred_list), (np.sum(matice), 40, 40, 1)))
     proba = [np.max(predikce) for predikce in all_preds]
     print(proba)
-    preds = list(map(np.argmax,all_preds))
+    preds = list(map(np.argmax, all_preds))
     rovna_matice = list(matice.flatten())
 
-    i=0
+    i = 0
     for cislo, znak in enumerate(rovna_matice):
         if znak == 1:
             rovna_matice[cislo] = preds[i]
-            i+=1
+            i += 1
     rovna_matice = np.array(rovna_matice)
-    matice = rovna_matice.reshape(9,9)
+    matice = rovna_matice.reshape(9, 9)
     print(preds)
     print(matice)
     return matice
+
 
 def displayNumbers(img, numbers, solved_num, color=(0, 255, 0)):
     """
@@ -223,18 +231,20 @@ def draw_corners(img, corners):
         cv2.circle(img, (int(x), int(y)), 2, (0, 255, 0), -1)
     return img
 
+
 def text_on_top(img, text1, color1, pos1, text2, color2, pos2):
     cv2.rectangle(img, (0, 0), (1000, 40), (0, 0, 0), -1)
     cv2.putText(img=img, text=text1, org=pos1, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
-            color=color1, thickness=1)
+                color=color1, thickness=1)
     cv2.putText(img=img, text=text2, org=pos2, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
-            color=color2, thickness=1)
+                color=color2, thickness=1)
     return img
+
 
 def bottom_text(img, text1, color1, pos1, text2, color2, pos2):
     cv2.rectangle(img, (0, 550), (800, 600), (0, 0, 0), -1)
     cv2.putText(img=img, text=text1, org=pos1, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=0.7,
-            color=color1, thickness=1)
+                color=color1, thickness=1)
     cv2.putText(img=img, text=text2, org=pos2, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=0.7,
-            color=color2, thickness=1)
+                color=color2, thickness=1)
     return img
