@@ -28,7 +28,7 @@ prev = 0
 model = load_model('model3.h5')
 
 seen = False
-limit_on_cornes = 2
+limit_on_cornes = 1
 seen_corners = 0
 not_seen_corners = t.time() - 2
 time_out_corners = 1
@@ -79,7 +79,7 @@ while True:
                     color2 = (0, 140, 255)
                     text1 = 'model misread digits'
                     text2 = "new digit recocgnition starts in " + str(round(3 - time_on_corners, 2))
-                    wait = 3
+                    wait = 1
                 else:
                     text1 = "sudoku grid detected"
                     color = (0, 0, 255) if int((10 * time_on_corners)) % 3 == 0 else (0, 255, 0)
@@ -108,9 +108,6 @@ while True:
                 # if grid was not seen already predict numbers and solve
                 if not seen:
                     img_nums, stats, centroids = extract_numbers(result)
-                    cv2.imshow('numbers', img_nums)
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                        break
                     centered_numbers, matrix_mask = center_numbers(img_nums, stats, centroids)
                     empty_matrix = np.zeros((9, 9), dtype='uint8')
                     cv2.imshow('numbers', centered_numbers)
@@ -129,17 +126,17 @@ while True:
                         seen_corners = 0
                         bad_read = True
                         color = (0, 0, 255)
-                        limit_on_cornes = 3
+                        limit_on_cornes = 1
                         solved = False
                     else:
                         text1 = time
-                        # text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
+                        text2 = "Digits recognized in " + str(round(end_prediction - start_predicition, 3)) + ' s'
                         color1 = (0, 255, 0)
                         color2 = (0, 255, 0)
                         pos1 = (265, 30)
                         bad_read = False
                         seen = True
-                        limit_on_cornes = 2
+                        limit_on_cornes = 1
                         solved = True
                         wait = 0.5
                         text1_b = "press ""s"" to save solution"
@@ -157,7 +154,7 @@ while True:
                 not_seen_corners = t.time()
             time_out_corners = t.time() - not_seen_corners
             print(f"time_out_corners: {time_out_corners}")
-            if time_out_corners > 2:
+            if time_out_corners > 0.2:
                 multiplier = int(time_out_corners // 1)
                 if multiplier > (5 * nasobek):
                     nasobek += 1
