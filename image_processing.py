@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-import keras
-import pickle
 import tensorflow as tf
 
 
@@ -87,8 +85,8 @@ def extract_numbers(img):
     for i, stat in enumerate(stats):
         if i == 0:
             continue
-        if stat[4] > 50 and stat[2] > 5 and stat[3] > 5 and stat[3] < 40 and stat[2] < 40 and stat[0] > 0 and stat[
-            1] > 0 and stat[3] / stat[2] > 1 and stat[3] / stat[2] < 5:
+        if stat[4] > 50 and stat[2] in range(5,40) and stat[3] in range(5,40) and stat[0] > 0 and stat[
+            1] > 0 and (int(stat[3] / stat[2])) in range(1,5):
             viz[labels == i] = 255
             centroidy.append(centroids[i])
             stats_numbers.append(stat)
@@ -124,11 +122,7 @@ def center_numbers(img, stats, centroids):
         img_left = int(((left // 50)) * 50 + ((50 - width) / 2))
         img_top = int(((top // 50)) * 50 + ((50 - height) / 2))
         center = centroids[i]
-        offset_x = int(np.round(np.round(center[0] / 25, 0) * 25 - center[0], 0))
-        offset_y = int(np.round(np.round(center[1] / 25, 0) * 25 - center[1], 0))
-        # centered_num_grid[number[1] + offset_y:number[1] + number[3] + offset_y,
-        # number[0] + offset_x:number[0] + number[2] + offset_x] = img[number[1]:number[1] + number[3],
-        #                                                          number[0]:number[0] + number[2]]
+
         centered_num_grid[img_top:img_top + height,
         img_left: img_left + width] = img[number[1]:number[1] + number[3],
                                                                  number[0]:number[0] + number[2]]
@@ -232,19 +226,17 @@ def draw_corners(img, corners):
     return img
 
 
-def text_on_top(img, text1, color1, pos1, text2, color2, pos2):
+def text_on_top(img, text1, color1, pos1, fps):
     cv2.rectangle(img, (0, 0), (1000, 40), (0, 0, 0), -1)
     cv2.putText(img=img, text=text1, org=pos1, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
                 color=color1, thickness=1)
-    cv2.putText(img=img, text=text2, org=pos2, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
-                color=color2, thickness=1)
+    cv2.putText(img=img, text=f'fps: {fps}', org=(35, 60),
+                fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
+                color=(255,255,255), thickness=1)
     return img
 
-
-def bottom_text(img, text1, color1, pos1, text2, color2, pos2):
-    cv2.rectangle(img, (0, 550), (800, 600), (0, 0, 0), -1)
-    cv2.putText(img=img, text=text1, org=pos1, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=0.7,
-                color=color1, thickness=1)
-    cv2.putText(img=img, text=text2, org=pos2, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=0.7,
-                color=color2, thickness=1)
-    return img
+def seraching_rectange(img, counter):
+    corner_1 = (75 + (3 * counter), 75 + (3 * counter))
+    corner_2 = (725 - (3 * counter), 525 - (3 * counter))
+    cv2.rectangle(img, corner_1, corner_2, (0, 0, 255), 2)
+    return img, corner_1[0]

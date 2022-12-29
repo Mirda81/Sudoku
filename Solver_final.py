@@ -80,21 +80,11 @@ def deselect(X, Y, r, cols):
 
 
 def solve_wrapper(arr):
-    # if list(squares_num_array.flatten()).count('0') >= 80:
-    #     return None, None
-    #
+
     start = time.time()
-    #
-    # # convert string to 9x9 array
-    # arr = []
-    # for i in squares_num_array:
-    #     arr.append(int(i))
-    #
-    # arr = np.array(arr, dtype=int)
-    # arr = np.reshape(arr, (9, 9))
+
     try:
         ans = list(solve_sudoku(size=(3, 3), grid=arr))[0]
-
         s = np.array(ans).reshape(9,9)
         return s, "Solved in %.4fs" % (time.time() - start)
     except:
