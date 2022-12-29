@@ -163,7 +163,6 @@ def predict_numbers(numbers, matice, model):
                 # matice[row, col] = predikce
     all_preds = model.predict(tf.reshape(np.array(pred_list), (np.sum(matice), 40, 40, 1)))
     proba = [np.max(predikce) for predikce in all_preds]
-    print(proba)
     preds = list(map(np.argmax, all_preds))
     rovna_matice = list(matice.flatten())
 
@@ -172,6 +171,7 @@ def predict_numbers(numbers, matice, model):
         if znak == 1:
             rovna_matice[cislo] = preds[i]
             i += 1
+
     rovna_matice = np.array(rovna_matice)
     matice = rovna_matice.reshape(9, 9)
     print(preds)
