@@ -50,6 +50,8 @@ wait = 0.8
 time_on_corners = 0
 text1_b = ""
 text2_b = ""
+pos1 = (320, 30)
+pos2= (275, 60)
 # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
 # cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
@@ -77,12 +79,16 @@ while True:
                 if bad_read:
                     color1 = (0, 0, 255)
                     color2 = (0, 140, 255)
-                    text1 = 'model misread digits'
-                    text2 = "new digit recocgnition starts in " + str(round(3 - time_on_corners, 2))
-                    wait = 1
+                    if time_on_corners > 2:
+                        text1 = 'model misread digits'
+                        text2 = ""
+                        color1=(0,0,255)
+                    wait = 0.5
                 else:
                     text1 = "sudoku grid detected"
+                    text2 = ""
                     color = (0, 0, 255) if int((10 * time_on_corners)) % 3 == 0 else (0, 255, 0)
+                    color1 = (0,255,0)
                 cv2.drawContours(img_result, [contour], -1, color, 2)
             else:
                 draw_corners(img_result, corners)
@@ -91,10 +97,6 @@ while True:
             if seen_corners == 0:
                 seen_corners = t.time()
             time_on_corners = t.time() - seen_corners
-            # when model misread digit before, give 3 sec to adjust camera before new recognition cycle
-
-            # else:
-            #     text1 = "Sudoku frame detected"
 
             print(f"time_on_corners: {time_on_corners}")
 
@@ -123,10 +125,9 @@ while True:
 
                     # check if sudoko was solved succesfuly
                     if np.any(solved_matrix == 0):
-                        seen_corners = 0
+                        # seen_corners = 0
                         bad_read = True
-                        color = (0, 0, 255)
-                        limit_on_cornes = 1
+                        color1 = (0, 144, 255)
                         solved = False
                     else:
                         text1 = time
@@ -134,19 +135,20 @@ while True:
                         color1 = (0, 255, 0)
                         color2 = (0, 255, 0)
                         pos1 = (265, 30)
+                        pos2 = (225,60)
                         bad_read = False
                         seen = True
-                        limit_on_cornes = 1
                         solved = True
-                        wait = 0.5
+                        wait = 0.03
                         text1_b = "press ""s"" to save solution"
                         text2_b = "press ""m"" to enter steps mode"
 
                 # make an inverse transormation
-                mask = np.zeros_like(result)
-                img_solved = displayNumbers(mask, predicted_matrix, solved_matrix)
-                inv = get_inv_perspective(img_result, img_solved, corners)
-                img_result = cv2.addWeighted(img_result, 1, inv, 1, -1)
+                if not bad_read:
+                    mask = np.zeros_like(result)
+                    img_solved = displayNumbers(mask, predicted_matrix, solved_matrix)
+                    inv = get_inv_perspective(img_result, img_solved, corners)
+                    img_result = cv2.addWeighted(img_result, 1, inv, 1, -1)
 
         # if we dont see corners, keep 2 seconds old solution then ready to new solution
         else:
@@ -161,6 +163,7 @@ while True:
                 tecky = 5 + multiplier - (5 * nasobek)
                 text2 = "Searching for grid" + '.' * tecky
                 text1 = "Ready"
+                pos1=(340,25)
                 color1 = (255, 255, 255)
                 color2 = (125, 255, 125)
                 seen = False
@@ -176,7 +179,7 @@ while True:
                 rectangle_counter += 1
         # text writing
 
-        text_on_top(img_result, text1, color1, (320, 30), text2, color2, (275, 60))
+        text_on_top(img_result, text1, color1, pos1, text2, color2, pos2)
         bottom_text(img_result, text1_b, (125, 125, 140), (230, 560), text2_b, (255, 0, 0), (230, 580))
         #      break
 
