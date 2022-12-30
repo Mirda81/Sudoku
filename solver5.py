@@ -1,7 +1,8 @@
 import numpy as np
-
+import time as t
 
 def solve_sudoku(board):
+    start = t.time()
     # Funkce, která vrátí seznam možných hodnot pro políčko na zadaných řádku a sloupci
     def possible_values(row, col):
         used_values = set()
@@ -39,7 +40,8 @@ def solve_sudoku(board):
 
     # Spusťte rekurzivní funkci pro vyřešení sudoku
     solve(board)
-    return board
+
+    return board, "Solved in %.4fs" % (t.time() - start)
 
 grid = np.array([[9, 0, 0, 8, 5, 0, 0, 0, 0],
  [0, 0, 0, 0, 4, 9, 3, 5, 7],

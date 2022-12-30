@@ -7,7 +7,6 @@ from image_processing import perspective_transform, get_corners, draw_corners, t
 from functions import camera_set
 from process import check_contour, predict, inv_transformation
 from text_conditions import get_vars, dots
-
 # camera setting
 output_size = (800, 600)
 frame_rate = 60
