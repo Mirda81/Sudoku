@@ -174,8 +174,6 @@ def predict_numbers(numbers, matice, model):
 
     rovna_matice = np.array(rovna_matice)
     matice = rovna_matice.reshape(9, 9)
-    print(preds)
-    print(matice)
     return matice
 
 
