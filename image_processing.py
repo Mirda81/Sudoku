@@ -179,7 +179,7 @@ def predict_numbers(numbers, matice, model):
     return matice
 
 
-def displayNumbers(img, numbers, solved_num, color=(0, 255, 0)):
+def displayNumbers(img, numbers, solved_num, color=(150, 0, 0)):
     """
     :param img: transfomed image with sudoku grid
     :param numbers: matrix with predicted numbers
@@ -230,13 +230,14 @@ def text_on_top(img, text1, color1, pos1, fps):
     cv2.rectangle(img, (0, 0), (1000, 40), (0, 0, 0), -1)
     cv2.putText(img=img, text=text1, org=pos1, fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
                 color=color1, thickness=1)
-    cv2.putText(img=img, text=f'fps: {fps}', org=(35, 60),
+    cv2.putText(img=img, text=f'fps: {fps}', org=(35, 40),
                 fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL, fontScale=1,
                 color=(255,255,255), thickness=1)
+
     return img
 
 def seraching_rectange(img, counter):
-    corner_1 = (75 + (3 * counter), 75 + (3 * counter))
-    corner_2 = (725 - (3 * counter), 525 - (3 * counter))
+    corner_1 = (75 + (2 * counter), 75 + (2 * counter))
+    corner_2 = (725 - (2 * counter), 525 - (2 * counter))
     cv2.rectangle(img, corner_1, corner_2, (0, 0, 255), 2)
     return img, corner_1[0]

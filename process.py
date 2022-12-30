@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from image_processing import preprocess, extract_frame,extract_numbers,center_numbers,predict_numbers,displayNumbers,get_inv_perspective
 from Solver_final import solve_wrapper
+import cvzone
 
 def check_contour(img):
     prep_img = preprocess(img)
@@ -21,5 +22,6 @@ def predict(img,model):
 def inv_transformation(mask,img,predicted_matrix,solved_matrix,corners):
     img_solved = displayNumbers(mask, predicted_matrix, solved_matrix)
     inv = get_inv_perspective(img, img_solved, corners)
-    img = cv2.addWeighted(img, 1, inv, 1, -1)
+    img = cv2.addWeighted(img, 0.9, inv, 1, -1)
     return img,img_solved
+
