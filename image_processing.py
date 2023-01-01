@@ -177,7 +177,7 @@ def predict_numbers(numbers, matice, model):
     return matice
 
 
-def displayNumbers(img, numbers, solved_num, color=(0, 150, 0)):
+def displayNumbers(img, numbers, solved_num, color=(0, 255, 0)):
     """
     :param img: transfomed image with sudoku grid
     :param numbers: matrix with predicted numbers

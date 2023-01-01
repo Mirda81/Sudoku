@@ -40,7 +40,9 @@ while (cap.isOpened()):
     start = t.time()
     prev = t.time()
     success, img = cap.read()
+    img = cv2.resize(img, (800, 600))
     img_result = img.copy()
+
     # apply threshold to image
     contour_exist, prep_img, frame, contour, contour_line, thresh = check_contour(img_result)
     # if countour exist, wait 2 seconds - time to focus grid properly
