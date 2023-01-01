@@ -11,7 +11,6 @@ from text_conditions import get_vars, dots
 
 # camera setting
 output_size = (800, 600)
-frame_rate = 60
 cap = camera_set(output_size[0], output_size[1])
 # load model for predict numbers
 model = load_model('model3.h5')
@@ -40,7 +39,7 @@ while (cap.isOpened()):
     start = t.time()
     prev = t.time()
     success, img = cap.read()
-    img = cv2.resize(img, (800, 600))
+    img = cv2.resize(img, output_size)
     img_result = img.copy()
 
     # apply threshold to image

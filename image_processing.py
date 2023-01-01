@@ -79,6 +79,7 @@ def extract_numbers(img):
     result = preprocess_numbers(img)
     retval, labels, stats, centroids = cv2.connectedComponentsWithStats(result)
     viz = np.zeros_like(result, np.uint8)
+
     centroidy = []
     stats_numbers = []
 
