@@ -3,15 +3,15 @@ import cv2
 from image_processing import preprocess, extract_frame,extract_numbers,center_numbers,predict_numbers,displayNumbers,get_inv_perspective
 from Solver_final import solve_wrapper
 
-def check_contour(img):
-    prep_img = preprocess(img)
-    frame, contour, contour_line, thresh = extract_frame(prep_img)
+def check_contour(img,thresh,threshold_method,block_size,c):
+    prep_img = preprocess(img,(3,3))
+    frame, contour, contour_line, thresh = extract_frame(prep_img, thresh,threshold_method,block_size,c)
     contour_exist = len(contour) == 4
 
     return contour_exist,prep_img, frame, contour, contour_line, thresh
 
 def predict(img,model):
-    img_nums, stats, centroids = extract_numbers(img)
+    img_nums, stats, centroids, nums = extract_numbers(img,'ADAPTIVE_THRESH_GAUSSIAN_C')
     centered_numbers, matrix_mask = center_numbers(img_nums, stats, centroids)
     predicted_matrix = predict_numbers(centered_numbers, matrix_mask, model)
     solved_matrix, time = solve_wrapper(predicted_matrix.copy())

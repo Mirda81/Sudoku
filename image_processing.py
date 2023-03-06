@@ -3,24 +3,26 @@ import numpy as np
 import tensorflow as tf
 
 
-def preprocess(img):
+def preprocess(img, kernel):
     """
     :param img: input image
     :return: blurred gray image
     """
-    blurred = cv2.GaussianBlur(img, (3, 3), 0)
+    blurred = cv2.GaussianBlur(img, kernel, 0)
     gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
     return gray
 
 
-def extract_frame(img):
+def extract_frame(img,threshold,threshold_method,block_size,c):
     """
     :param img: input image
     :return: image with extracted sudoku grid, biggest contour
     """
     ramecek = np.zeros(img.shape, np.uint8)
-
-    thresh = cv2.adaptiveThreshold(img, 255, 0, 1, 9, 5)
+    if threshold_method == 'ADAPTIVE_THRESH_MEAN_C':
+        thresh = cv2.adaptiveThreshold(img, threshold,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY_INV, block_size, c)
+    elif threshold_method == 'ADAPTIVE_THRESH_GAUSSIAN_C':
+        thresh = cv2.adaptiveThreshold(img, threshold, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, block_size, c)
     contours, hier = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     biggest_contour = []
@@ -30,14 +32,14 @@ def extract_frame(img):
         obsah = cv2.contourArea(kontura)
         peri = cv2.arcLength(kontura, True)
         vektory = cv2.approxPolyDP(kontura, 0.01 * peri, True)
-        if (len(vektory) == 4) and (obsah > max_value) and (obsah > 40000):
+        if (len(vektory) == 4) and (obsah > max_value) and (obsah > 30000) and (obsah < 800*600):
             max_value = obsah
             biggest_contour = vektory
     if len(biggest_contour) > 0:
         cv2.drawContours(ramecek, [biggest_contour], 0, 255, -1)
         cv2.drawContours(ramecek, [biggest_contour], 0, 0, 2)
         res = cv2.bitwise_and(img, ramecek)
-    return res, biggest_contour, ramecek, thresh
+    return res, biggest_contour, ramecek,thresh
 
 
 def get_corners(contour):
@@ -71,12 +73,21 @@ def perspective_transform(img, shape, corners):
     return result
 
 
-def extract_numbers(img):
+def extract_numbers(img,threshold_method):
     """
     :param img: input binary image
     :return: image with extracted numbers, list of countours stats(left, top, width, height, area), centroid coordinations
     """
-    result = preprocess_numbers(img)
+    if threshold_method == 'ADAPTIVE_THRESH_MEAN_C':
+        img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 9, 2)
+    elif threshold_method == 'ADAPTIVE_THRESH_GAUSSIAN_C':
+        img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 9, 2)
+
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=1)
+
+    result =img
     retval, labels, stats, centroids = cv2.connectedComponentsWithStats(result)
     viz = np.zeros_like(result, np.uint8)
 
@@ -94,19 +105,9 @@ def extract_numbers(img):
 
     stats_numbers = np.array(stats_numbers)
     centroidy = np.array(centroidy)
-    return viz, stats_numbers, centroidy
+    return viz, stats_numbers, centroidy,result
 
 
-def preprocess_numbers(img):
-    """
-    :param img: image of number
-    :return: processed image
-    """
-    img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 9, 2)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, iterations=1)
-
-    return img
 
 
 def center_numbers(img, stats, centroids):
