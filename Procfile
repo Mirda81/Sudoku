@@ -1,0 +1,1 @@
+web: streamlit run app_camera.py
