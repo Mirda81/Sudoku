@@ -1,1 +1,1 @@
-web: sh setup.sh && app_camera.py
+web: app_camera.py
