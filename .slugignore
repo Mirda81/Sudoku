@@ -1,0 +1,6 @@
+*.psd
+*.pdf
+/model
+/neco(pages)
+/__pycache__
+/.idea
