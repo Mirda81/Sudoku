@@ -1,1 +1,1 @@
-web: streamlit run app_camera.py
+web: voila --port=$PORT --no-browser app_camera.py
