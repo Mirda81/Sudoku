@@ -115,7 +115,7 @@ def video():
         #img_result = cvzone.overlayPNG(img_result, bkg, [0, 0])
         my_slot1.image(img_result, channels="BGR", use_column_width=True)
     cap.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
 
 st.set_page_config(page_title="Sudoku Solver App",
