@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run app_camera.py
+web: streamlit run app_camera.py
