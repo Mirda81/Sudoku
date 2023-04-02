@@ -1,5 +1,4 @@
 import numpy as np
-import cvzone
 import cv2
 import time as t
 import tensorflow as tf
@@ -113,7 +112,7 @@ def video():
         text, pos, color1 = get_vars(out_corners_check,solved,bad_read,time_on_corners,seen,time)
         text_on_top(img_result, text + dots_str, color1, pos, fps)
 
-        img_result = cvzone.overlayPNG(img_result, bkg, [0, 0])
+        #img_result = cvzone.overlayPNG(img_result, bkg, [0, 0])
         my_slot1.image(img_result, channels="BGR", use_column_width=True)
     cap.release()
     cv2.destroyAllWindows()
