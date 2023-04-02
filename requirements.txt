@@ -1,5 +1,4 @@
 cvzone~=1.5.6
 opencv-python-headless~=4.6.0.66
-scikit-learn~=1.0
 tensorflow-cpu~=2.0
 streamlit==1.19.0
