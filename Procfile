@@ -1,1 +1,1 @@
-web: streamlit run app_camera.py
+web: app_camera.py
