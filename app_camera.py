@@ -2,7 +2,7 @@ import numpy as np
 import cvzone
 import cv2
 import time as t
-from keras.models import load_model
+import tensorflow as tf
 from image_processing import perspective_transform, get_corners, draw_corners, text_on_top, seraching_rectange
 from functions import camera_set
 from process import check_contour, predict, inv_transformation
@@ -14,7 +14,7 @@ def video():
     output_size = (800, 600)
     cap = camera_set(output_size[0], output_size[1])
     # load model for predict numbers
-    model = load_model('model3.h5')
+    model = tf.keras.models.load_model('model3.h5')
     # load frame image
     bkg = cv2.imread('pngegg.png', cv2.IMREAD_UNCHANGED)
     bkg = cv2.resize(bkg, output_size)
