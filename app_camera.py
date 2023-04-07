@@ -1,7 +1,8 @@
 import numpy as np
+import cvzone
 import cv2
 import time as t
-import tensorflow as tf
+from keras.models import load_model
 from image_processing import perspective_transform, get_corners, draw_corners, text_on_top, seraching_rectange
 from functions import camera_set
 from process import check_contour, predict, inv_transformation
@@ -13,7 +14,7 @@ def video():
     output_size = (800, 600)
     cap = camera_set(output_size[0], output_size[1])
     # load model for predict numbers
-    model = tf.keras.models.load_model('model3.h5')
+    model = load_model('model3.h5')
     # load frame image
     bkg = cv2.imread('pngegg.png', cv2.IMREAD_UNCHANGED)
     bkg = cv2.resize(bkg, output_size)
@@ -112,10 +113,10 @@ def video():
         text, pos, color1 = get_vars(out_corners_check,solved,bad_read,time_on_corners,seen,time)
         text_on_top(img_result, text + dots_str, color1, pos, fps)
 
-        #img_result = cvzone.overlayPNG(img_result, bkg, [0, 0])
+        img_result = cvzone.overlayPNG(img_result, bkg, [0, 0])
         my_slot1.image(img_result, channels="BGR", use_column_width=True)
     cap.release()
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
 
 st.set_page_config(page_title="Sudoku Solver App",
@@ -132,12 +133,12 @@ with col2:
     st.text("Using OpenCV and Streamlit for this demo")
     my_slot1 = st.empty()
     my_slot1.image(empty_frame, use_column_width=True)
-    if 'video_started' not in st.session_state:
-        st.session_state['video_started'] = False
-    if st.button("Start Video"):
-        st.session_state['video_started'] = True
-    if st.session_state.video_started:
-        video()
-
+    # if 'video_started' not in st.session_state:
+    #     st.session_state['video_started'] = False
+    # if st.button("Start Video"):
+    #     st.session_state['video_started'] = True
+    # if st.session_state.video_started:
+    #     video()
+video()
 
 
