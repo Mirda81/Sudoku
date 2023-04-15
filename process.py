@@ -1,4 +1,3 @@
-import cvzone
 import cv2
 from image_processing import preprocess, extract_frame,extract_numbers,center_numbers,predict_numbers,displayNumbers,get_inv_perspective
 from Solver_final import solve_wrapper
