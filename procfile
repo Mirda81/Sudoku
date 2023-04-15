@@ -1,1 +1,1 @@
-web: gunicorn app_camera.py:app
+web: gunicorn app_camera:app
