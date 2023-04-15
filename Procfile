@@ -1,2 +1,1 @@
-web: gunicorn app_camera:app
-web: gunicorn run:app
+web: gunicorn app:app
