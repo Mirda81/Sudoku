@@ -1,4 +1,3 @@
-import cvzone
 import time as t
 from keras.models import load_model
 from image_processing import perspective_transform, get_corners, draw_corners, text_on_top, seraching_rectange
@@ -121,9 +120,7 @@ def gen_frames():  # function that generates frames to be displayed
         fps = int(1 / time_elapsed)
         text, pos, color1 = get_vars(out_corners_check, solved, bad_read, time_on_corners, seen, time)
         text_on_top(img_result, text + dots_str, color1, pos, fps)
-        # steps mode, enter step mode by press "m", then navigate with press 1,0 esc  to quit
-
-        img_result = cvzone.overlayPNG(img_result, bkg, [0, 0])
+        # steps mode, enter step mode by press "m", then navigate with press 1,0 esc  to quit        
 
 
         # convert the frame to JPEG format
