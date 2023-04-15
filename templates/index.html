@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sudoku Solver</title>
+    <style>
+        body {
+            background-color: #f1f1f1;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 60px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px #333;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+        }
+        .wrapper {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Sudoku solver</h1>
+        <img src="{{ url_for('video_feed') }}">
+    </div>
+</body>
+</html>
