@@ -4,7 +4,7 @@ from image_processing import perspective_transform, get_corners, draw_corners, t
 from functions import camera_set
 from process import check_contour, predict, inv_transformation
 from text_conditions import get_vars, dots
-
+from imutils.video import WebcamVideoStream
 from flask import Flask, render_template, Response
 import cv2
 import numpy as np
@@ -12,12 +12,11 @@ import numpy as np
 app = Flask(__name__)
 
 output_size = (800, 600)
-cap = cv2.VideoCapture(0)
-
+# cap = cv2.VideoCapture(0)
 def gen_frames():  # function that generates frames to be displayed
-
+    cap = WebcamVideoStream(src=0).start()
     output_size = (800, 600)
-    cap = camera_set(output_size[0], output_size[1])
+    # cap = camera_set(output_size[0], output_size[1])
     # load model for predict numbers
     model = load_model('model3.h5')
     # load frame image
@@ -44,7 +43,8 @@ def gen_frames():  # function that generates frames to be displayed
 
         start = t.time()
         prev = t.time()
-        success, img = cap.read()
+        img = cap.read()
+        # img = imutils.resize(frame, width=400)
         img = cv2.resize(img, output_size)
         img_result = img.copy()
 

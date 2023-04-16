@@ -7,4 +7,7 @@
     <orderEntry type="jdk" jdkName="Python 3.9 (Python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="requirements21.txt" />
+  </component>
 </module>
